@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <!-- React -->
+    <script src="https://unpkg.com/react@18.2.0/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.development.js"></script>
+
+    <!-- Babel -->
+    <script src="https://unpkg.com/babel-standalone@6.26.0/babel.min.js"></script>
+</head>
+<body>
+    <div id="root"></div>
+    
+    <script type="text/babel">
+        class PostItem extends React.Component {
+            render() {
+                return (
+                    <div>
+                        <h2>{this.props.title}</h2>
+                        <p>{this.props.content}</p>
+                    </div>
+                );
+            }
+        }
+
+        const post =  [
+            {
+                title: "Post title 1",
+                content: "Post content 1",
+            },
+            {
+                title: "Post title 2",
+                content: "Post content 2",
+            },
+            {
+                title: "Post title 3",
+                content: "Post content 3",
+            },
+        ];
+
+        const reactRoot = ReactDOM.createRoot(document.getElementById("root"));
+        reactRoot.render(
+            <div>
+                {post.map(post => (
+                    <PostItem key={post.title} title={post.title} content={post.content} />
+                ))}
+            </div>
+        );
+    </script>
+</body>
+</html>

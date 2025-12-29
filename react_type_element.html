@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>React App</title>
+
+    <!-- React -->
+    <script src="https://unpkg.com/react@18.2.0/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.development.js"></script>
+
+    <!-- Babel -->
+    <script src="https://unpkg.com/babel-standalone@6.26.0/babel.min.js"></script>
+  </head>
+
+  <body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+      /* =========================
+         TYPE: STRING (HTML)
+      ========================= */
+      const h1 = React.createElement("h1", null, "Hello, React!");
+
+      const ul = React.createElement(
+        "ul",
+        null,
+        React.createElement("li", { key: "js" }, "JS"),
+        React.createElement("li", { key: "react" }, "React"),
+        React.createElement("li", { key: "node" }, "Node")
+      );
+
+      /* =========================
+         TYPE: FUNCTION COMPONENT ()
+      ========================= */
+      const AppFunction = () => {
+        return (
+          <div>
+            <h1>Hello, React!</h1>
+            <ul>
+              <li>JS</li>
+              <li>React</li>
+              <li>Node</li>
+            </ul>
+          </div>
+        );
+      };
+
+      /* =========================
+         TYPE: CLASS COMPONENT (CŨ)
+      ========================= */
+      class AppClass extends React.Component {
+        render() {
+          return (
+            <div>
+              <h1>Hello, React!</h1>
+              <ul>
+                <li>JS</li>
+                <li>React</li>
+                <li>Node</li>
+              </ul>
+            </div>
+          );
+        }
+      }
+
+      /* =========================
+         JSX TỔNG HỢP
+      ========================= */
+      const app = (
+        <div className="wrapper">
+          {/* Render Class Component */}
+          {/* - Khai báo
+            Cách 1: <AppClass></AppClass>
+            Cách 2: <AppClass /> 
+          */}
+          <AppClass />
+
+          {/* Render Function Component */}
+          <AppFunction />
+
+          <div className="content">Hello Content</div>
+          <div className="footer">Hello Footer</div>
+        </div>
+      );
+
+      const reactRoot = ReactDOM.createRoot(document.getElementById("root"));
+
+      reactRoot.render(
+        <React.Fragment>
+          {/*
+            {h1}
+            {ul}  
+          */}
+          {app}
+        </React.Fragment>
+      );
+    </script>
+  </body>
+</html>
