@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>React App</title>
+    <script
+      crossorigin
+      src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"
+    ></script>
+    <script
+      crossorigin
+      src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"
+    ></script>
+
+    <!-- Babel Standalone:
+         - Dịch JSX → React.createElement
+         - ES6 -> ES5
+    -->
+    <script src="https://unpkg.com/babel-standalone@6.26.0/babel.min.js"></script>
+  </head>
+
+  <body>
+    <div id="root"></div>
+
+    <!-- type="text/babel": báo cho Babel compile JSX -->
+    <script type="text/babel">
+      /* =====================================================
+         JSX (JavaScript XML)
+         ===================================================== */
+
+      // JSX element: KHÔNG phải DOM
+      // → chỉ là JS object mô tả UI
+      const h1JSX = <h1>JSX</h1>;
+
+      const ul = (
+        <ul>
+          <li>JS</li>
+          <li>React</li>
+          <li>Node</li>
+        </ul>
+      );
+
+      const courses = [
+        { id: 1, name: "JS" },
+        { id: 2, name: "Fuck" },
+        { id: 3, name: "Node" },
+      ];
+
+      /*
+        map():
+        - Chuyển array data → array React Element
+        - Mỗi phần tử PHẢI có key
+      */
+      const listCourses = courses.map((course) => (
+        <li key={course.id}>{course.name}</li>
+      ));
+
+      /*
+        key:
+        - Dùng cho thuật toán diff
+        - Giúp React nhận diện phần tử
+        - Không truyền xuống props
+      */
+
+      const ulCourses = (
+        <ul>
+          {courses.map((course) => (
+            <li key={course.id}>{course.name}</li>
+          ))}
+        </ul>
+      );
+
+      // JSX version
+      // const jsx = (
+      //   <div>
+      //     <h1>JSX</h1>
+      //     <ul>
+      //       {courses.map((course) => (
+      //         <li key={course.id}>{course.name}</li>
+      //       ))}
+      //     </ul>
+      //   </div>
+      // );
+
+      // createElement version (Babel dịch JSX thành)
+      const jsx = React.createElement(
+        React.Fragment, // Fragment: không tạo DOM node
+        null,
+        React.createElement("h1", null, "JSX"),
+        React.createElement("ul", null, listCourses)
+      );
+
+      const reactRoot = ReactDOM.createRoot(document.getElementById("root"));
+      reactRoot.render(jsx);
+
+      /*
+        ❗ LƯU Ý QUAN TRỌNG:
+              reactRoot.render() chỉ render 1 React Element
+              Nếu muốn render nhiều → dùng Fragment
+      */
+
+      // ❌ Sai
+      // reactRoot.render(h1JSX);
+      // reactRoot.render(ul);
+
+      // ✅ Đúng
+      //   reactRoot.render(
+      //     <React.Fragment>
+      //       {h1JSX}
+      //       {ul}
+      //     </React.Fragment>
+      //   );
+    </script>
+  </body>
+</html>
