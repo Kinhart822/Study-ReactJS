@@ -5,3 +5,8 @@
 2/ React element
 3/ Render React → DOM thật
 4/ So sánh DOM vs React element 
+
+<!-- react_jsx.html -->
+1/ JSX
+2/ JSX vs React.createElement
+3/ React.Fragment
