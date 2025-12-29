@@ -10,3 +10,9 @@
 1/ JSX
 2/ JSX vs React.createElement
 3/ React.Fragment
+
+<!-- react_type_element.html & react_type_element_exercise.html -->
+1/ Type element
+2/ Props element
+3/ Children element
+4/ Exercise
