@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>React App</title>
+
+    <!-- React 18 (UMD build - chạy trực tiếp trên browser) -->
+    <!-- react: lõi React (createElement, hooks, component...) -->
+    <script
+      crossorigin
+      src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"
+    ></script>
+
+    <!-- react-dom: render React element → DOM thật -->
+    <script
+      crossorigin
+      src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"
+    ></script>
+  </head>
+
+  <body>
+    <!-- ROOT: nơi React gắn cây UI vào -->
+    <div id="root"></div>
+
+    <script>
+      /* ====================
+         PHẦN 1: DOM THUẦN
+         ==================== */
+
+        // document.createElement: tạo DOM node thật
+      const h1DOM = document.createElement("h1");
+
+        // set attribute trực tiếp trên DOM
+      h1DOM.title = "Hello, React!";
+      h1DOM.className = "heading";
+      h1DOM.id = "h1-dom";
+
+        // textContent: nội dung text của node
+      h1DOM.textContent = "shit, React!";
+
+        // style DOM: phải set từng property
+      h1DOM.style.color = "red";
+      h1DOM.style.fontSize = "20px";
+
+        // appendChild: gắn node vào DOM thật
+      document.body.appendChild(h1DOM);
+
+        // Tạo danh sách bằng DOM
+      const ulDOM = document.createElement("ul");
+
+      const liDOM1 = document.createElement("li");
+      liDOM1.innerText = "JS";
+
+      const liDOM2 = document.createElement("li");
+      liDOM2.innerText = "React";
+
+      const liDOM3 = document.createElement("li");
+      liDOM3.innerText = "Node";
+
+        // appendChild: thứ tự append = thứ tự hiển thị
+      ulDOM.appendChild(liDOM1);
+      ulDOM.appendChild(liDOM2);
+      ulDOM.appendChild(liDOM3);
+
+      document.body.appendChild(ulDOM);
+
+      /* =========================
+         PHẦN 2: REACT ELEMENT
+         ========================= */
+
+      /* - Cấu trúc:
+          React.createElement(type, props, children)
+            + type: string → HTML element
+            + props: object → attribute / event / style
+            + children: nội dung hoặc element con
+      */
+
+      const h1React = React.createElement(
+        "h1", // type = string → DOM element <h1>
+        {
+          title: "Hello, React!",
+          className: "heading", // JSX dùng className
+          id: "h1-react",
+        },
+        "shit, React!" // children (text node)
+      );
+
+      const ulReact = React.createElement(
+        "ul",
+        null, // không có props
+        React.createElement(
+          "li",
+          {
+            // style trong React là object JS
+            style: { color: "red", fontSize: "20px" },
+          },
+          "JS"
+        ),
+        React.createElement(
+          "li",
+          { style: { color: "red", fontSize: "20px" } },
+          "React"
+        ),
+        React.createElement(
+          "li",
+          { style: { color: "red", fontSize: "20px" } },
+          "Node"
+        )
+      );
+
+      /* =====================================================
+         PHẦN 3: RENDER REACT → DOM THẬT
+         ===================================================== */
+
+      // container: DOM node thật (root container)
+      const container = document.getElementById("root");
+
+      /*
+        React 18:
+        createRoot → tạo React Root (concurrent rendering)
+      */
+      const reactRoot = ReactDOM.createRoot(container);
+
+      /*
+        render():
+        - Nhận React Element
+        - Tạo Virtual DOM
+        - Diff
+        - Update DOM thật
+      */
+      reactRoot.render(ulReact);
+
+      /* =====================================================
+         PHẦN 4: SO SÁNH DOM vs REACT ELEMENT
+         ===================================================== */
+
+      // DOM thật (browser object)
+      console.log("DOM h1:", h1DOM);
+
+      // React Element (JS object - Virtual DOM description)
+      console.log("React h1:", h1React);
+
+      console.log("DOM ul:", ulDOM);
+      console.log("React ul:", ulReact);
+    </script>
+  </body>
+</html>
