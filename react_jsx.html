@@ -26,11 +26,20 @@
     <!-- type="text/babel": báo cho Babel compile JSX -->
     <script type="text/babel">
       /* =====================================================
-         JSX (JavaScript XML)
-         ===================================================== */
+      JSX (JavaScript XML)
+      =====================================================
+      - JSX là cú pháp mở rộng của JavaScript
+      - Cho phép viết UI giống HTML ngay trong JS
+      - JSX KHÔNG phải HTML và KHÔNG phải DOM
+      - JSX sẽ được Babel compile thành React.createElement
+      */
 
-      // JSX element: KHÔNG phải DOM
-      // → chỉ là JS object mô tả UI
+      /* -----------------------------------------------------
+      JSX ELEMENT
+      -----------------------------------------------------
+      - JSX element chỉ là JavaScript object
+      - Dùng để mô tả UI, chưa tạo DOM thật
+      */
       const h1JSX = <h1>JSX</h1>;
 
       const ul = (
@@ -41,28 +50,34 @@
         </ul>
       );
 
+      /* -----------------------------------------------------
+      DATA SOURCE
+      -----------------------------------------------------
+      - Mảng dữ liệu thường được render bằng map()
+      */
       const courses = [
         { id: 1, name: "JS" },
         { id: 2, name: "Fuck" },
         { id: 3, name: "Node" },
       ];
 
-      /*
-        map():
-        - Chuyển array data → array React Element
-        - Mỗi phần tử PHẢI có key
+      /* -----------------------------------------------------
+      map() → JSX LIST
+      -----------------------------------------------------
+      - map() chuyển array data → array React element
+      - Mỗi phần tử trong list PHẢI có key
       */
       const listCourses = courses.map((course) => (
         <li key={course.id}>{course.name}</li>
       ));
 
-      /*
-        key:
-        - Dùng cho thuật toán diff
-        - Giúp React nhận diện phần tử
-        - Không truyền xuống props
+      /* -----------------------------------------------------
+      KEY TRONG JSX
+      -----------------------------------------------------
+      - key giúp React so sánh (diff) danh sách hiệu quả
+      - key KHÔNG được truyền xuống component con qua props
+      - Chỉ dùng nội bộ cho React
       */
-
       const ulCourses = (
         <ul>
           {courses.map((course) => (
@@ -71,33 +86,47 @@
         </ul>
       );
 
+      /* -----------------------------------------------------
+      JSX vs React.createElement
+      -----------------------------------------------------
+      - JSX chỉ là syntax sugar
+      - Babel sẽ dịch JSX thành React.createElement
+      */
+
       // JSX version
       // const jsx = (
-      //   <div>
+      //   <React.Fragment>
       //     <h1>JSX</h1>
       //     <ul>
       //       {courses.map((course) => (
       //         <li key={course.id}>{course.name}</li>
       //       ))}
       //     </ul>
-      //   </div>
+      //   </React.Fragment>
       // );
 
-      // createElement version (Babel dịch JSX thành)
+      // createElement version (sau khi Babel compile)
       const jsx = React.createElement(
-        React.Fragment, // Fragment: không tạo DOM node
+        React.Fragment, // Fragment: nhóm nhiều element, không tạo DOM node
         null,
         React.createElement("h1", null, "JSX"),
         React.createElement("ul", null, listCourses)
       );
 
+      /* -----------------------------------------------------
+      RENDER REACT ELEMENT
+      -----------------------------------------------------
+      - createRoot() tạo React root
+      - render() chỉ nhận DUY NHẤT 1 React element
+      */
       const reactRoot = ReactDOM.createRoot(document.getElementById("root"));
       reactRoot.render(jsx);
 
-      /*
-        ❗ LƯU Ý QUAN TRỌNG:
-              reactRoot.render() chỉ render 1 React Element
-              Nếu muốn render nhiều → dùng Fragment
+      /* -----------------------------------------------------
+      LƯU Ý QUAN TRỌNG
+      -----------------------------------------------------
+      ❗ reactRoot.render() chỉ render 1 React Element
+      ❗ Nếu cần render nhiều element → dùng Fragment
       */
 
       // ❌ Sai
@@ -105,12 +134,12 @@
       // reactRoot.render(ul);
 
       // ✅ Đúng
-      //   reactRoot.render(
-      //     <React.Fragment>
-      //       {h1JSX}
-      //       {ul}
-      //     </React.Fragment>
-      //   );
+      // reactRoot.render(
+      //   <React.Fragment>
+      //     {h1JSX}
+      //     {ul}
+      //   </React.Fragment>
+      // );
     </script>
   </body>
 </html>
