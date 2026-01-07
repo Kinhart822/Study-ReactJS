@@ -1,0 +1,135 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+
+    <!-- React -->
+    <script src="https://unpkg.com/react@18.2.0/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.development.js"></script>
+
+    <!-- Babel -->
+    <script src="https://unpkg.com/babel-standalone@6.26.0/babel.min.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+      /**
+       * =========================
+       * PROPS TRONG REACT
+       * =========================
+       *
+       * Props dùng để truyền dữ liệu từ component cha → component con
+       * Props là READ-ONLY (chỉ đọc), component con không được thay đổi props
+       */
+
+      /**
+       * =========================
+       * REACT ELEMENT / COMPONENT
+       * =========================
+       *
+       * - Component là một function nhận props làm đối số
+       * - Props được truyền giống như attribute của thẻ HTML
+       *
+       * Lưu ý với JSX:
+       * - class  → className
+       * - for    → htmlFor
+       */
+
+      /**
+       * Component ReactElement
+       *
+       * - Nhận props thông qua destructuring
+       * - Props có thể là bất kỳ kiểu dữ liệu nào:
+       *   string, number, object, array, function,...
+       * - callback là function được truyền từ component cha
+       */
+      function ReactElement({
+        title,
+        description,
+        publish,
+        data,
+        callback = () => {},
+      }) {
+        /**
+         * Gọi callback nếu tồn tại
+         * (Ví dụ: component con gọi logic của component cha)
+         */
+        if (typeof callback === "function") {
+          callback(Math.random());
+        }
+
+        return (
+          <React.Fragment>
+            <div>
+              <h1>{title}</h1>
+              <p>{description}</p>
+              <p>{publish}</p>
+
+              {/* Không thể render trực tiếp object/array → cần stringify */}
+              <p>{JSON.stringify(data)}</p>
+
+              <label htmlFor="email">Email</label>
+              {/* Click vào label sẽ focus input */}
+              <input id="email" type="email" />
+            </div>
+
+            <div>
+              <label htmlFor="password">Password</label>
+              <input id="password" type="password" />
+            </div>
+
+            <p className="submit">Submit</p>
+          </React.Fragment>
+        );
+      }
+
+      /**
+       * =========================
+       * COMPONENT CHA (APP)
+       * =========================
+       *
+       * - Truyền props xuống component con
+       * - Có thể truyền:
+       *   + Dữ liệu (string, array, object)
+       *   + Function (callback)
+       *
+       * Lưu ý:
+       * - Prop "key" là prop đặc biệt
+       * - Không thể truy cập key trong component con
+       */
+      function App() {
+        // JSX thực chất là React element (object)
+        console.log(<ReactElement title="React test" />);
+
+        return (
+          <div>
+            <ReactElement
+              key="react"
+              title="React test"
+              description="React is a library for building user interfaces"
+              publish="5 minutes ago"
+              data={[{ a: 1 }, { b: 2 }, { c: 3 }]}
+              callback={(random) => {
+                console.log("random", random);
+              }}
+            />
+
+            {/* Props không truyền → giá trị là undefined */}
+            <ReactElement />
+            <ReactElement />
+          </div>
+        );
+      }
+
+      /**
+       * =========================
+       * RENDER REACT APP
+       * =========================
+       */
+      const reactRoot = ReactDOM.createRoot(document.getElementById("root"));
+      reactRoot.render(<App />);
+    </script>
+  </body>
+</html>
