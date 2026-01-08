@@ -3,146 +3,171 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>React App</title>
+    <title>Document</title>
 
-    <!-- React 18 (UMD build - chạy trực tiếp trên browser) -->
-    <!-- react: lõi React (createElement, hooks, component...) -->
-    <script
-      crossorigin
-      src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"
-    ></script>
+    <!-- React -->
+    <script src="https://unpkg.com/react@18.2.0/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.development.js"></script>
 
-    <!-- react-dom: render React element → DOM thật -->
-    <script
-      crossorigin
-      src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"
-    ></script>
+    <!-- Babel -->
+    <script src="https://unpkg.com/babel-standalone@6.26.0/babel.min.js"></script>
   </head>
-
   <body>
-    <!-- ROOT: nơi React gắn cây UI vào -->
     <div id="root"></div>
+    <!-- 
+      ====================================
+      PHẦN I – JSX & Component cơ bản
+      ====================================
+      1. Xử lý DOM Events
+        - onClick, onChange, onSubmit, ...
 
-    <script>
-      /* ====================
-         PHẦN 1: DOM THUẦN
-         ==================== */
+      2. Quy tắc đặt tên Component
+        - Component do chúng ta tự định nghĩa
+        - BẮT BUỘC viết hoa chữ cái đầu (PascalCase)
 
-        // document.createElement: tạo DOM node thật
-      const h1DOM = document.createElement("h1");
+      3. Render Component động
+        - Có thể chọn Component từ object
+          Ví dụ: const Component = Form['Input']
 
-        // set attribute trực tiếp trên DOM
-      h1DOM.title = "Hello, React!";
-      h1DOM.className = "heading";
-      h1DOM.id = "h1-dom";
+      4. Giá trị KHÔNG render trong JSX
+        - Boolean
+        - null
+        - undefined
 
-        // textContent: nội dung text của node
-      h1DOM.textContent = "shit, React!";
+      5. Render có điều kiện
+        - Sử dụng toán tử logic:
+          &&, ||, ternary ( ? : )
 
-        // style DOM: phải set từng property
-      h1DOM.style.color = "red";
-      h1DOM.style.fontSize = "20px";
+      ====================================
+      PHẦN II – Props trong JSX
+      ====================================
+      1. Truyền props
+        <YourComponent
+          propName1="String literals"
+          propName2={expression}
+        />
 
-        // appendChild: gắn node vào DOM thật
-      document.body.appendChild(h1DOM);
+      2. Props mặc định
+        - Props không truyền giá trị sẽ mặc định là `true`
+          Ví dụ: <Component disabled />
 
-        // Tạo danh sách bằng DOM
-      const ulDOM = document.createElement("ul");
+      3. Spread / Rest Props
+        - Truyền toàn bộ props:
+          <Component {...props} />
 
-      const liDOM1 = document.createElement("li");
-      liDOM1.innerText = "JS";
+      4. Children Prop
+        - Nội dung nằm giữa cặp thẻ component
+          <YourComponent>Text</YourComponent>
+          <YourComponent>{expression}</YourComponent>
 
-      const liDOM2 = document.createElement("li");
-      liDOM2.innerText = "React";
-
-      const liDOM3 = document.createElement("li");
-      liDOM3.innerText = "Node";
-
-        // appendChild: thứ tự append = thứ tự hiển thị
-      ulDOM.appendChild(liDOM1);
-      ulDOM.appendChild(liDOM2);
-      ulDOM.appendChild(liDOM3);
-
-      document.body.appendChild(ulDOM);
-
-      /* =========================
-         PHẦN 2: REACT ELEMENT
-         ========================= */
-
-      /* - Cấu trúc:
-          React.createElement(type, props, children)
-            + type: string → HTML element
-            + props: object → attribute / event / style
-            + children: nội dung hoặc element con
-      */
-
-      const h1React = React.createElement(
-        "h1", // type = string → DOM element <h1>
-        {
-          title: "Hello, React!",
-          className: "heading", // JSX dùng className
-          id: "h1-react",
+      5. Render Props Pattern
+        - children là một function
+        - Component quyết định CÁCH render
+        - Dữ liệu được truyền từ component cha
+    -->
+    <script type="text/babel">
+      const Form = {
+        Input: function Input() {
+          return <input type="text" />;
         },
-        "shit, React!" // children (text node)
-      );
+        Checkbox: function Checkbox() {
+          return <input type="checkbox" />;
+        },
+        SubmitButton: function SubmitButton() {
+          return <button type="submit">Submit</button>;
+        },
+      };
 
-      const ulReact = React.createElement(
-        "ul",
-        null, // không có props
-        React.createElement(
-          "li",
-          {
-            // style trong React là object JS
-            style: { color: "red", fontSize: "20px" },
-          },
-          "JS"
-        ),
-        React.createElement(
-          "li",
-          { style: { color: "red", fontSize: "20px" } },
-          "React"
-        ),
-        React.createElement(
-          "li",
-          { style: { color: "red", fontSize: "20px" } },
-          "Node"
-        )
-      );
+      // const Button = ({ title, href, onClick }) => {
+      //   let Component = "button"; // Phái khai báo mới sử dụng được onclick
+      //   let prop = {};
+      //   if (onClick) {
+      //     prop.onClick = onClick;
+      //   }
+      //   if (href) {
+      //     Component = "a";
+      //     prop.href = href;
+      //   }
+      //   return <Component {...prop}>{title}</Component>;
+      // };
 
-      /* =====================================================
-         PHẦN 3: RENDER REACT → DOM THẬT
-         ===================================================== */
+      const Button = ({ children }) => {
+        return <button>{children}</button>;
+      };
 
-      // container: DOM node thật (root container)
-      const container = document.getElementById("root");
+      // function List({ data }) {
+      //   return (
+      //     <ul>
+      //       {data.map((item) => (
+      //         <li key={item.name}>{item.name}</li>
+      //       ))}
+      //     </ul>
+      //   );
+      // }
 
-      /*
-        React 18:
-        createRoot → tạo React Root (concurrent rendering)
-      */
-      const reactRoot = ReactDOM.createRoot(container);
+      function List({ data, children }) {
+        return (
+          <ul>
+            {/* {data.map((item) => (
+              <li key={item.name}>{children(item)}</li>
+            ))} */}
 
-      /*
-        render():
-        - Nhận React Element
-        - Tạo Virtual DOM
-        - Diff
-        - Update DOM thật
-      */
-      reactRoot.render(ulReact);
+            {/* {data.map((item, index) => (
+              <li key={index}>{children(item)}</li>
+            ))} */}
 
-      /* =====================================================
-         PHẦN 4: SO SÁNH DOM vs REACT ELEMENT
-         ===================================================== */
+            {data.map((...args) => (
+              <li key={args}>{children(...args)}</li>
+            ))}
+          </ul>
+        );
+      }
 
-      // DOM thật (browser object)
-      console.log("DOM h1:", h1DOM);
+      const App = () => {
+        // console.log(Form["Input"]);
+        // const Component = Form["Input"];
+        // return (
+        //   <div>
+        //     <h1>Hello, React!</h1>
+        //     <Form.Input />
+        //     <Form.Checkbox />
+        //     <Form.SubmitButton />
+        //     <Component />
+        //   </div>
+        // );
+        const cars = [
+          { name: "Audi", price: 52642 },
+          { name: "Mercedes", price: 57127 },
+          { name: "Skoda", price: 9000 },
+          { name: "Volvo", price: 29000 },
+          { name: "Bentley", price: 350000 },
+          { name: "Citroen", price: 21000 },
+          { name: "Honda", price: 63000 },
+          { name: "Volkswagen", price: 21600 },
+        ];
+        return (
+          <div>
+            <Button>Click me!</Button>
+            {/* <Button
+              title="Click me!"
+              href="https://google.com"
+              onClick={() => console.log(Math.random())}
+            /> */}
+            {/* <List data={cars}/> */}
+            <List data={cars}>
+              {(item) => (
+                <div>
+                  <h2>{item.name}</h2>
+                  <p>{item.price}</p>
+                </div>
+              )}
+            </List>
+          </div>
+        );
+      };
 
-      // React Element (JS object - Virtual DOM description)
-      console.log("React h1:", h1React);
-
-      console.log("DOM ul:", ulDOM);
-      console.log("React ul:", ulReact);
+      const reactRoot = ReactDOM.createRoot(document.getElementById("root"));
+      reactRoot.render(<App />);
     </script>
   </body>
 </html>

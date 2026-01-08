@@ -20,3 +20,7 @@
 <!-- react_prop.html & react_prop_exercise.html -->
 1/ Props
 2/ Exercise
+
+<!-- react_dom.html -->
+1/ Basic JSX & Component 
+2/ Props in JSX
