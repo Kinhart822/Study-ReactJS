@@ -1,6 +1,6 @@
 # Study-ReactJS
 
-<!-- react_dom.html -->
+<!-- react.html -->
 1/ DOM thuần
 2/ React element
 3/ Render React → DOM thật
