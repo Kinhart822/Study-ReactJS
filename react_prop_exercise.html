@@ -140,12 +140,82 @@
         );
       }
 
+      const CourseDisplay = (props) => {
+        return (
+          <div>
+            <h1>{props.title}</h1>
+            <p>{props.description}</p>
+            <p>{props.students_count}</p>
+            <p>{props.videos_count}</p>
+            <p>{props.duration}</p>
+            <p>{props.duration_text}</p>
+            <p>{props.published_at}</p>
+            <img src={props.image_url} alt="" />
+            <img src={props.icon_url} alt="" />
+            <p>{props.price}</p>
+            <p>{props.old_price}</p>
+            <p>{props.show_contact_instead_of_price}</p>
+            <p>{props.is_pro}</p>
+            <p>{props.is_published}</p>
+            <p>{props.user_progress}</p>
+            <p>{props.last_completed_at}</p>
+          </div>
+        );
+      };
+
+      // const CourseDisplay1 = ({ data }) => {
+      const CourseDisplay1 = ({ data, onClick }) => {
+        return (
+          <div>
+            {/* <h1 onClick={() => alert("View " + props.title)}>{data.title}</h1> */}
+            <h1 onClick={onClick}>{data.title}</h1>
+            <p>{data.description}</p>
+            <p>{data.students_count}</p>
+            <p>{data.videos_count}</p>
+            <p>{data.duration}</p>
+            <p>{data.duration_text}</p>
+            <p>{data.published_at}</p>
+            <img src={data.image_url} alt="" />
+            <img src={data.icon_url} alt="" />
+            <p>{data.price}</p>
+            <p>{data.old_price}</p>
+            <p>{data.show_contact_instead_of_price}</p>
+            <p>{data.is_pro}</p>
+            <p>{data.is_published}</p>
+            <p>{data.user_progress}</p>
+            <p>{data.last_completed_at}</p>
+          </div>
+        );
+      };
+
       const courseList = course.data.map((course) => (
-        <CourseItem key={course.id} {...course} />
+        <div key={course.id}>
+          {/* <CourseItem key={course.id} {...course} /> */}
+          {/* <CourseDisplay key={course.id} {...course} /> */}
+          <CourseDisplay1 data={course} />
+        </div>
       ));
 
+      const App = () => {
+        const handleClick = (title) => {
+          console.log("View " + title);
+        };
+
+        return (
+          <div id="wrapper">
+            {course.data.map((course) => (
+              <CourseDisplay1
+                key={course.id}
+                data={course}
+                onClick={() => handleClick(course.title)}
+              />
+            ))}
+          </div>
+        );
+      };
+
       const reactRoot = ReactDOM.createRoot(document.getElementById("root"));
-      reactRoot.render(courseList);
+      reactRoot.render(<App />);
     </script>
   </body>
 </html>
