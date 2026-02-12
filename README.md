@@ -29,17 +29,51 @@ Thư mục: [`lessons/`](./lessons)
     - So sánh JSX với `React.createElement`.
     - Sử dụng `React.Fragment`.
 
-3.  **Components, Props & Elements**
+3.  **Components, Props, Elements & Type**
     - Tệp: [`react_type_element.html`](./lessons/react_type_element.html), [`react_prop.html`](./lessons/react_prop.html)
-    - **Element**: Là các đối tượng nhỏ nhất cấu thành ứng dụng.
-    - **Component**: Cách chia nhỏ UI thành các phần có thể tái sử dụng.
-    - **Props**: Cơ chế truyền dữ liệu từ cha xuống con.
+    - **Element**: Là các đối tượng nhỏ nhất cấu thành ứng dụng (vd: `const element = <h1>Hello</h1>`).
+    - **Component**: Cách chia nhỏ UI thành các phần độc lập, có thể tái sử dụng.
+    - **Props**: "Properties" - cơ chế truyền dữ liệu từ component cha xuống component con.
 
-4.  **React DOM & Thực hành**
-    - Tệp: [`react_dom.html`](./lessons/react_dom.html)
-    - Các bài tập nhỏ trong [`react_prop_exercise.html`](./lessons/react_prop_exercise.html).
+    #### 💡 Functional Components vs Class Components
 
----
+    **a. Khái niệm:**
+    - **Functional Component:** Là một hàm JavaScript nhận `props` và trả về JSX. Kể từ khi có **Hooks**, đây là cách viết chuẩn và hiện đại nhất.
+    - **Class Component:** Sử dụng cú pháp Class của ES6 để định nghĩa component. Nó quản lý trạng thái (state) và vòng đời (lifecycle) thông qua các phương thức của class.
+
+    **b. Ví dụ:**
+    - **Functional Component (Khuyên dùng):**
+
+    ```jsx
+    function Welcome(props) {
+      return <h1>Chào mừng {props.name}!</h1>;
+    }
+    ```
+
+    - **Class Component:**
+
+    ```jsx
+    class Welcome extends React.Component {
+      render() {
+        return <h1>Chào mừng {this.props.name}!</h1>;
+      }
+    }
+    ```
+
+    **c. So sánh chi tiết:**
+
+    | Đặc điểm               | Functional Component                     | Class Component                               |
+    | :--------------------- | :--------------------------------------- | :-------------------------------------------- |
+    | **Cú pháp**            | Đơn giản, ngắn gọn                       | Phức tạp, nhiều "boilerplate" code            |
+    | **State (Trạng thái)** | Sử dụng `useState` Hook                  | Sử dụng `this.state` & `this.setState`        |
+    | **Lifecycle**          | Sử dụng `useEffect` Hook                 | `componentDidMount`, `componentDidUpdate`,... |
+    | **Hiệu năng**          | Tốt hơn (không tốn chi phí tạo instance) | Kém hơn một chút                              |
+
+    **d. Khi nào dùng cái nào?**
+    - **Luôn ưu tiên Functional Components + Hooks** cho mọi dự án mới. Code sẽ sạch hơn, dễ test và dễ tái sử dụng logic (Custom Hooks).
+    - **Chỉ dùng Class Components khi:**
+      - Bảo trì các dự án cũ (Legacy code).
+      - Cần sử dụng các tính năng mà Hooks chưa hỗ trợ (hiếm), ví dụ: **Error Boundaries** (`componentDidCatch`).
 
 ## Phần 2: React + Webpack (Tự cấu hình)
 
