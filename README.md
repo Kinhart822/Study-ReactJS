@@ -363,6 +363,7 @@ tiktok/
 **Hooks** là những hàm đặc biệt được đưa vào từ phiên bản React 16.8, cho phép bạn sử dụng state và các tính năng khác của React mà không cần viết Class.
 
 ### 📒 Khái niệm chung
+
 1.  **Chỉ áp dụng cho Functional Component**: Hooks không hoạt động bên trong Class Component.
 2.  **Sạch sẽ và tối giản**: Giúp logic của component trở nên tập trung, không bị chia nhỏ ra các phương thức vòng đời (lifecycle) phức tạp.
 3.  **Dễ tái sử dụng**: Bạn có thể tự tạo Custom Hooks để chia sẻ logic giữa các component một cách linh hoạt.
@@ -376,7 +377,7 @@ tiktok/
 
 `useState` được dùng khi bạn muốn một giá trị (dữ liệu) thay đổi thì giao diện sẽ tự động được cập nhật (re-render) để phản ánh sự thay đổi đó.
 
-#### ⚙️ Cấu trúc cơ bản:
+#### ⚙️ Cấu trúc cơ bản
 ```jsx
 import { useState } from "react";
 
@@ -384,63 +385,165 @@ function Component() {
   const [state, setState] = useState(initialValue);
 }
 ```
--   `state`: Giá trị hiện tại của trạng thái.
--   `setState`: Hàm dùng để cập nhật giá trị mới cho `state`.
--   `initialValue`: Giá trị khởi tạo ban đầu.
+- **`state`**: Giá trị hiện tại của trạng thái.
+- **`setState`**: Hàm dùng để cập nhật giá trị mới cho state.
+- **`initialValue`**: Giá trị khởi tạo ban đầu.
 
-#### 💡 Các đặc điểm quan trọng:
+#### 💡 Các đặc điểm quan trọng
+- **Re-render**: Component sẽ được thực thi lại ngay sau khi hàm `setState` được gọi với một giá trị khác giá trị hiện tại.
+- **Initial State chỉ dùng 1 lần**: Giá trị khởi tạo chỉ được nạp vào state trong lần đầu tiên component được **mount**.
+- **Thay thế hoàn toàn (Replace)**: Hàm `setState` của Hook sẽ **thay thế hoàn toàn** giá trị cũ bằng giá trị mới (khác với class component là merge state).
 
-1.  **Re-render**: Component sẽ được thực thi lại (re-render) ngay sau khi hàm `setState` được gọi với một giá trị khác giá trị hiện tại.
-2.  **Initial State chỉ dùng 1 lần**: Giá trị khởi tạo chỉ được nạp vào `state` trong lần đầu tiên component được mount. Trong các lần re-render sau, React sẽ lấy giá trị đang lưu trong bộ nhớ.
-3.  **Thay thế hoàn toàn (Replace)**: Khác với `this.setState` trong Class Component (merge state), hàm `setState` của Hook sẽ **thay thế hoàn toàn** giá trị cũ bằng giá trị mới.
+> [!TIP]
+> **Lazy Initialization**: Nếu `initialValue` cần tính toán phức tạp, hãy truyền vào một callback:
+> `const [state, setState] = useState(() => complexComputation());`
 
----
-
-#### 🚀 Các trường hợp sử dụng nâng cao:
-
-**a. Callback cho Initial State (Lazy Initialization)**
-Nếu giá trị khởi tạo cần một phép tính phức tạp hoặc tốn thời gian, bạn nên truyền vào một callback để React chỉ thực thi nó một lần duy nhất:
-```jsx
-const [state, setState] = useState(() => {
-    // Tính toán phức tạp ở đây...
-    return result;
-});
-```
-
-**b. Callback cho setState (Functional Updates)**
-Khi bạn muốn cập nhật state nhiều lần liên tiếp hoặc giá trị mới phụ thuộc trực tiếp vào giá trị cũ, hãy sử dụng dạng callback:
-
-*Ví dụ lỗi (Tăng 1 thay vì 3):*
+#### ⚠️ Lưu ý khi cập nhật State
+**a. Cập nhật state với Callback (Functional Updates)**
+Khi giá trị mới phụ thuộc trực tiếp vào giá trị cũ, hoặc bạn gọi `setState` nhiều lần liên tiếp, hãy sử dụng dạng callback để tránh lỗi **stale state**:
 ```jsx
 const handleIncrease = () => {
-    setCounter(counter + 1);
-    setCounter(counter + 1); 
-    setCounter(counter + 1); // Cả 3 dòng đều dùng chung giá trị counter cũ tại thời điểm render đó.
+  setCounter(prev => prev + 1);
+  setCounter(prev => prev + 1);
+  setCounter(prev => prev + 1); // Kết quả sẽ là +3 thay vì +1
 };
 ```
 
-*Ví dụ đúng (Tăng 3):*
+**b. Làm việc với Object và Array**
+Vì React thay thế hoàn toàn dữ liệu, bạn **phải** dùng Spread Operator (`...`) để bảo toàn các dữ liệu cũ không thay đổi:
 ```jsx
-const handleIncrease = () => {
-    setCounter(prev => prev + 1);
-    setCounter(prev => prev + 1);
-    setCounter(prev => prev + 1); // Mỗi dòng đều lấy giá trị mới nhất từ `prev`.
-};
-```
-
-**c. Làm việc với Object và Array**
-Vì `useState` thay thế hoàn toàn dữ liệu, khi cập nhật Object hoặc Array, bạn **phải sử dụng Spread Operator (`...`)** để giữ lại các giá trị cũ:
-```jsx
-const [user, setUser] = useState({ name: 'John', age: 20 });
+const [user, setUser] = useState({ name: "John", age: 20 });
 
 const updateAge = () => {
-    setUser({
-        ...user, // Copy lại toàn bộ info cũ
-        age: 21  // Chỉ ghi đè mỗi age
-    });
+  setUser({
+    ...user, // Copy lại toàn bộ info cũ
+    age: 21, // Chỉ ghi đè mỗi age
+  });
 };
 ```
-
 ---
 
-_Happy Coding!_ 🚀
+### 2. One-way / Two-way Binding
+
+Trong React, cơ chế truyền dữ liệu mặc định là **One-way binding** (ràng buộc một chiều), nhưng chúng ta có thể dễ dàng mô phỏng **Two-way binding** (ràng buộc hai chiều) thông qua sự kết hợp giữa `state` và các sự kiện (`events`).
+
+#### a. One-way Binding (Mặc định)
+Dữ liệu chỉ chảy theo một hướng: từ **Code (State)** ra **Giao diện (UI)**. Khi state thay đổi, UI sẽ cập nhật theo, nhưng khi người dùng nhập vào input, state sẽ không tự động thay đổi nếu ta không xử lý.
+
+#### b. Two-way Binding (Mô phỏng)
+Dữ liệu ràng buộc cả hai chiều: **State ↔ UI**.
+- Khi State thay đổi → Input hiển thị giá trị mới.
+- Khi người dùng nhập vào Input → State lập tức cập nhật giá trị mới.
+
+#### c. Các ví dụ thực tế
+
+**1. Ràng buộc với Input Text**
+```jsx
+const [name, setName] = useState('');
+
+<input 
+  value={name} // State -> UI
+  onChange={e => setName(e.target.value)} // UI -> State
+/>
+```
+
+**2. Ràng buộc với Radio (Chọn 1)**
+Lưu trữ `id` hoặc `value` của mục được chọn vào state. Khi chọn mục mới, ta ghi đè giá trị cũ.
+```jsx
+const [checked, setChecked] = useState(1); // Mặc định chọn id = 1
+
+{courses.map(course => (
+  <div key={course.id}>
+    <input 
+      type="radio"
+      checked={checked === course.id}
+      onChange={() => setChecked(course.id)}
+    />
+    {course.name}
+  </div>
+))}
+```
+
+**3. Ràng buộc với Checkbox (Chọn nhiều)**
+Sử dụng mảng `[]` để lưu trữ danh sách các `id` được chọn. Cần logic để thêm/xóa `id` khi người dùng tích/bỏ tích.
+```jsx
+const [selected, setSelected] = useState([]);
+
+const handleCheck = (id) => {
+  setSelected(prev => {
+    const isChecked = prev.includes(id);
+    if (isChecked) {
+      return prev.filter(item => item !== id); // Bỏ chọn
+    } else {
+      return [...prev, id]; // Chọn thêm
+    }
+  });
+};
+
+{courses.map(course => (
+  <div key={course.id}>
+    <input 
+      type="checkbox"
+      checked={selected.includes(course.id)}
+      onChange={() => handleCheck(course.id)}
+    />
+    {course.name}
+  </div>
+))}
+```
+
+**4. Quản lý Form với Object**
+Thay vì dùng nhiều `useState` lẻ tẻ cho từng input, ta nên gộp chúng vào một object duy nhất:
+```jsx
+const [form, setForm] = useState({ name: '', email: '' });
+
+const handleChange = (e) => {
+  setForm({
+    ...form,
+    [e.target.name]: e.target.value
+  });
+};
+
+<input name="name" value={form.name} onChange={handleChange} />
+<input name="email" value={form.email} onChange={handleChange} />
+```
+#### Mounted / Unmounted
+
+Trong React, **Mounted** và **Unmounted** là hai trạng thái quan trọng mô tả sự hiện diện của một component trong giao diện người dùng (DOM).
+
+- **Mounted**: Thời điểm một component được React chèn vào cây DOM. Component đã hoàn tất quá trình khởi tạo và hiển thị lên trình duyệt.
+- **Unmounted**: Thời điểm một component bị gỡ bỏ khỏi cây DOM. Mọi dữ liệu tạm thời trong state của component đó sẽ bị xóa sạch khỏi bộ nhớ.
+
+##### Cách thực hiện Toggle (Ẩn/Hiện)
+Để chuyển đổi giữa trạng thái Mounted và Unmounted, chúng ta thường sử dụng một biến boolean trong `state` kết hợp với toán tử logic `&&`.
+
+```jsx
+function Content() {
+  return <h1>Nội dung đang hiển thị!</h1>;
+}
+
+function App() {
+  const [show, setShow] = useState(false);
+
+  return (
+    <div style={{ padding: 20 }}>
+      {/* Khi click, 'show' sẽ đảo ngược false <-> true */}
+      <button onClick={() => setShow(!show)}>
+        Toggle Content
+      </button>
+
+      {/* 
+        Nếu show là true -> Content được MOUNTED
+        Nếu show là false -> Content bị UNMOUNTED 
+      */}
+      {show && <Content />}
+    </div>
+  );
+}
+```
+
+##### Tại sao cần hiểu Mounted/Unmounted?
+Việc nắm vững hai trạng thái này cực kỳ quan trọng khi bắt đầu làm việc với **`useEffect`**, vì ta sẽ cần phải biết khi nào nên "dọn dẹp" (cleanup) các tác vụ như:
+- Hủy bỏ các hàm hẹn giờ (`setTimeout`, `setInterval`).
+- Ngắt kết nối các API/WebSocket.
+- Gỡ bỏ các sự kiện lắng nghe (`addEventListener`) khỏi `window` hoặc `document`.
