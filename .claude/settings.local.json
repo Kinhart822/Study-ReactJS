@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cmd /c \"mklink /D \\\\\"D:\\\\Code\\\\FrontEnd_Projects\\\\Study-ReactJS\\\\.claude\\\\skills\\\\gstack-autoplan\\\\\" \\\\\"C:\\\\Users\\\\ADMIN\\\\.claude\\\\skills\\\\gstack\\\\autoplan\\\\\"\" 2>&1)"
+    ]
+  }
+}
