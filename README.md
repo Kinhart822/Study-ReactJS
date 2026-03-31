@@ -932,3 +932,40 @@ export default memo(Content); // Content chỉ re-render khi onIncrease thực s
 ```
 
 ---
+
+### 9. `useMemo`
+
+`useMemo` là Hook giúp bạn **ghi nhớ (memoize)** một giá trị được tính toán phức tạp, nhằm tránh việc tính toán lại giá trị đó sau mỗi lần component re-render nếu dữ liệu đầu vào không thay đổi.
+
+#### a. So sánh `useCallback` vs `useMemo`
+
+| Đặc điểm | `useCallback` | `useMemo` |
+| :--- | :--- | :--- |
+| **Mục đích** | Ghi nhớ một **tham chiếu hàm**. | Ghi nhớ một **giá trị** (kết quả của hàm). |
+| **Trả về** | Chính cái hàm đó. | Kết quả sau khi thực thi hàm. |
+| **Khi nào dùng** | Khi truyền hàm xuống component con (để tránh re-render con). | Khi có logic tính toán nặng (vòng lặp, xử lý mảng lớn...). |
+
+#### b. Cách hoạt động
+
+```javascript
+const memoizedValue = useMemo(() => {
+    // Logic tính toán phức tạp
+    return result;
+}, [dependencies]);
+```
+
+1. **Callback**: Hàm chứa logic tính toán. Giá trị trả về của hàm này chính là giá trị mà `useMemo` sẽ lưu giữ.
+2. **Dependencies**: Mảng phụ thuộc. Logic tính toán chỉ chạy lại khi một trong các giá trị trong mảng này thay đổi.
+
+#### c. Ví dụ minh họa
+
+Sử dụng `useMemo` để tính tổng tiền trong giỏ hàng. Nếu người dùng chỉ thay đổi tên khách hàng (làm component re-render) mà không thay đổi danh sách sản phẩm, React sẽ không cần tính toán lại tổng tiền.
+
+```jsx
+const total = useMemo(() => {
+    console.log('Calculating...');
+    return products.reduce((acc, current) => acc + current.price, 0);
+}, [products]); // Chỉ tính lại khi 'products' thay đổi
+```
+
+---

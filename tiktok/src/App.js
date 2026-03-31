@@ -1,5 +1,4 @@
-import { useCallback, useState } from "react";
-import Content from "./Content";
+import { useMemo, useState, useRef } from "react";
 
 /**
  * 1. useState: Cơ bản với kiểu dữ liệu nguyên thủy (số)
@@ -366,7 +365,7 @@ import Content from "./Content";
  * 
  * Khi nào sử dụng:
  * - Khi component con nhận vào các props "nguyên thủy" (string, number, boolean) 
- *   và bạn muốn nó chỉ render lại khi các props này thực sự thay đổi.
+ *   và muốn nó chỉ render lại khi các props này thực sự thay đổi.
  * - Tránh lãng phí tài nguyên xử lý UI.
  */
 
@@ -416,40 +415,159 @@ import Content from "./Content";
  * - Nó sẽ trả về một memoized version của callback (giữ nguyên địa chỉ vùng nhớ).
  * - Hàm chỉ được tạo mới khi một trong các dependencies thay đổi.
  */
+// function App() {
+//   const [count, setCount] = useState(0);
+
+//   /**
+//    * ❌ Cách chưa tối ưu:
+//    * Mỗi lần App re-render, hàm này sẽ được tạo mới (địa chỉ vùng nhớ mới).
+//    * Dẫn đến component con (Content) sẽ luôn bị re-render vì prop 'onIncrease' thay đổi,
+//    * mặc dù Content đã được bọc trong React.memo().
+//    */
+//   // const handleIncrease = () => {
+//   //   setCount(prev => prev + 1);
+//   // };
+
+//   /**
+//    * ✅ Cách xử lý đúng: 
+//    * Dùng useCallback để "ghi nhớ" (memoize) hàm này.
+//    * Nó sẽ trả về một tham chiếu hàm duy nhất qua các lần render nếu dependencies không đổi.
+//    * => Giúp React.memo ở component con hoạt động hiệu quả.
+//    */
+//   const handleIncrease = useCallback(() => {
+//     setCount(prev => prev + 1);
+//   }, []); // [] : Chỉ khởi tạo hàm 1 lần duy nhất khi Mount
+
+//   return (
+//     <div className="App" style={{ padding: 32 }}>
+//       {/* 
+//           - Tên props bắt đầu bằng 'on' (onIncrease) để thể hiện sự kiện.
+//           - Tên hàm xử lý bắt đầu bằng 'handle' (handleIncrease).
+//       */}
+//       <Content onIncrease={handleIncrease} />
+
+//       <div style={{ marginTop: 20 }}>
+//         <h1>Count: {count}</h1>
+//       </div>
+//     </div>
+//   );
+// }
+
+/**
+ * 11. useMemo Hook
+ * 
+ * Khái niệm: 
+ * - Dùng để "ghi nhớ" (memoize) một giá trị được tính toán phức tạp.
+ * - Tránh việc tính toán lại giá trị này sau mỗi lần re-render nếu dữ liệu đầu vào (dependencies) không thay đổi.
+ * 
+ * Cách hoạt động:
+ * - useMemo nhận vào một callback function và một mảng dependencies.
+ * - Nó sẽ trả về giá trị được tính toán từ callback.
+ * - Giá trị này chỉ được tính toán lại khi một trong các dependencies thay đổi.
+ */
 function App() {
-  const [count, setCount] = useState(0);
+  const [name, setName] = useState("");
+  const [price, setPrice] = useState("");
+  const [products, setProducts] = useState([]);
+
+  const nameRef = useRef();
+
+  const handleAddProduct = () => {
+    // Tránh thêm sản phẩm trống
+    if (!name || !price) return;
+
+    setProducts([
+      ...products,
+      {
+        name,
+        price: Number(price), // Chuyển đổi sang số
+      },
+    ]);
+
+    // Reset form và focus lại vào ô 'Name'
+    setName("");
+    setPrice("");
+    nameRef.current.focus();
+  };
 
   /**
-   * ❌ Cách chưa tối ưu:
-   * Mỗi lần App re-render, hàm này sẽ được tạo mới (địa chỉ vùng nhớ mới).
-   * Dẫn đến component con (Content) sẽ luôn bị re-render vì prop 'onIncrease' thay đổi,
-   * mặc dù Content đã được bọc trong React.memo().
+   * Dùng useMemo để tối ưu hiệu năng:
+   * - 'total' chỉ được tính toán lại khi danh sách 'products' thay đổi.
+   * - Nếu nhập vào các ô input (làm App re-render), biến 'total' sẽ được lấy từ bộ nhớ (memo), 
+   *   không cần chạy lại vòng lặp reduce tốn tài nguyên.
    */
-  // const handleIncrease = () => {
-  //   setCount(prev => prev + 1);
-  // };
+  const total = useMemo(() => {
+    console.log("Tính toán lại tổng tiền...");
 
-  /**
-   * ✅ Cách xử lý đúng: 
-   * Dùng useCallback để "ghi nhớ" (memoize) hàm này.
-   * Nó sẽ trả về một tham chiếu hàm duy nhất qua các lần render nếu dependencies không đổi.
-   * => Giúp React.memo ở component con hoạt động hiệu quả.
-   */
-  const handleIncrease = useCallback(() => {
-    setCount(prev => prev + 1);
-  }, []); // [] : Chỉ khởi tạo hàm 1 lần duy nhất khi Mount
+    // array.reduce((accumulator, currentValue) => {
+    // xử lý
+    // return accumulator;
+    // }, initialValue);
+
+    // accumulator: giá trị tích lũy
+    // currentValue: giá trị hiện tại
+    // initialValue: giá trị ban đầu
+    const result = products.reduce((acc, product) => {
+      return acc + product.price;
+    }, 0);
+    return result;
+  }, [products]);
 
   return (
-    <div className="App" style={{ padding: 32 }}>
-      {/* 
-          - Tên props bắt đầu bằng 'on' (onIncrease) để thể hiện sự kiện.
-          - Tên hàm xử lý bắt đầu bằng 'handle' (handleIncrease).
-      */}
-      <Content onIncrease={handleIncrease} />
-
-      <div style={{ marginTop: 20 }}>
-        <h1>Count: {count}</h1>
+    <div className="App" style={{ padding: 40, maxWidth: 600, margin: '0 auto' }}>
+      <h1 style={{ color: '#2f3542' }}>Quản lý sản phẩm</h1>
+      
+      <div style={{ display: 'flex', gap: 10, marginBottom: 20 }}>
+        <input
+          value={name}
+          ref={nameRef}
+          style={{ padding: '8px 12px', borderRadius: 4, border: '1px solid #ccc', flex: 2 }}
+          placeholder="Tên sản phẩm..."
+          onChange={(e) => setName(e.target.value)}
+        />
+        <input
+          type="number"
+          value={price}
+          style={{ padding: '8px 12px', borderRadius: 4, border: '1px solid #ccc', flex: 1 }}
+          placeholder="Giá..."
+          onChange={(e) => setPrice(e.target.value)}
+        />
+        <button 
+          onClick={handleAddProduct}
+          style={{ 
+            padding: '8px 24px', 
+            backgroundColor: '#2ed573', 
+            color: '#fff', 
+            border: 'none', 
+            borderRadius: 4, 
+            cursor: 'pointer',
+            fontWeight: 'bold'
+          }}
+        >
+          Thêm
+        </button>
       </div>
+
+      <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#ff4757', marginBottom: 20 }}>
+        Tổng cộng: {total.toLocaleString()} đ
+      </div>
+
+      <ul style={{ listStyle: 'none', padding: 0 }}>
+        {products.map((product, index) => (
+          <li 
+            key={index} 
+            style={{ 
+              padding: '12px', 
+              borderBottom: '1px solid #f1f2f6', 
+              display: 'flex', 
+              justifyContent: 'space-between' 
+            }}
+          >
+            <span>{product.name}</span>
+            <span style={{ color: '#747d8c' }}>{product.price.toLocaleString()} đ</span>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
