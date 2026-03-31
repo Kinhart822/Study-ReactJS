@@ -591,9 +591,28 @@ useEffect(callback, [dependencies])
 
 ---
 
-#### d. Ví dụ minh họa (Call API & Infinite Loop)
+#### d. Cơ chế dọn dẹp (Cleanup Function)
+Khi bạn dùng `addEventListener` hoặc `setInterval`, bạn **phải** dọn dẹp để tránh rò rỉ bộ nhớ (Memory Leak). **Hàm dọn dẹp sẽ luôn được gọi trước khi component bị gỡ bỏ (unmount) hoặc trước khi lần callback tiếp theo được thực thi.**
 
-Nếu bạn gọi `setState` trong `useEffect` mà không có `[]`, nó sẽ gây ra vòng lặp vô tận:
+```javascript
+useEffect(() => {
+  const handleScroll = () => {
+    console.log(window.scrollY);
+  };
+
+  window.addEventListener('scroll', handleScroll);
+
+  // Cleanup function: Tự động chạy khi unmount
+  return () => {
+    window.removeEventListener('scroll', handleScroll);
+  };
+```
+---
+
+
+#### e. Ví dụ minh họa
+
+1. Nếu bạn gọi `setState` trong `useEffect` mà không có `[]`, nó sẽ gây ra vòng lặp vô tận:
 
 ```javascript
 // ❌ SAI: Gây Infinite Loop (Request liên tục)
@@ -611,21 +630,187 @@ useEffect(() => {
 }, []); // Thêm mảng rỗng để chặn vòng lặp
 ```
 
-#### e. Cơ chế dọn dẹp (Cleanup Function)
-Khi bạn dùng `addEventListener` hoặc `setInterval`, bạn **phải** dọn dẹp để tránh rò rỉ bộ nhớ (Memory Leak). **Hàm dọn dẹp sẽ luôn được gọi trước khi component bị gỡ bỏ (unmount) hoặc trước khi lần callback tiếp theo được thực thi.**
+2. Xử lý Timer (setInterval / setTimeout) & Lỗi Stale Closure
+
+Khi làm việc với timer trong `useEffect`, nếu không cẩn thận bạn sẽ gặp lỗi giá trị state bị "cũ" (chỉ lấy giá trị lúc khởi tạo).
+
+-   **Cách sai (Bị lỗi Closure)**: Dùng biến state trực tiếp trong `setInterval`.
+```javascript
+// ❌ Cách sai: Bị lỗi Stale Closure
+useEffect(() => {
+  const timer = setInterval(() => {
+    // 'countdown' ở đây luôn bị gán với giá trị khởi tạo (ví dụ 180)
+    // do biến bị "đóng gói" trong closure của lần đầu mount.
+    // Kết quả: State chỉ giảm xuống 179 rồi đứng yên mãi ở đó.
+    setCountdown(countdown - 1);
+  }, 1000);
+
+  return () => clearInterval(timer);
+}, []); // Mảng rỗng khiến interval chỉ được tạo 1 lần duy nhất
+```
+
+-   **Cách đúng**: Sử dụng **callback function** trong hàm setState để luôn lấy được giá trị mới nhất (`prev`).
+
+```javascript
+// ✅ Cách làm đúng: Chỉ tạo setInterval 1 lần và dùng callback
+useEffect(() => {
+  const timer = setInterval(() => {
+    // setCountdown nhận vào 1 callback và React sẽ truyền state mới nhất vào 'prev'
+    setCountdown(prev => prev - 1);
+  }, 1000);
+
+  return () => clearInterval(timer);
+}, []); 
+```
+
+##### 2. Preview Ảnh (Xử lý Memory Leak với Blob)
+Khi tạo link xem trước ảnh bằng `URL.createObjectURL(file)`, trình duyệt sẽ giữ file đó trong bộ nhớ cho đến khi bạn đóng tab hoặc gọi hàm dọn dẹp.
 
 ```javascript
 useEffect(() => {
-  const handleScroll = () => {
-    console.log(window.scrollY);
+  // Cleanup: Xóa file tạm trong bộ nhớ mỗi khi chọn ảnh mới
+  // hoặc khi component bị gỡ bỏ.
+  return () => {
+    avatar && URL.revokeObjectURL(avatar.preview);
+  };
+}, [avatar]);
+
+const handlePreviewAvatar = (e) => {
+  const file = e.target.files[0];
+  file.preview = URL.createObjectURL(file); // Tạo link tạm
+  setAvatar(file);
+};
+```
+
+##### 3. Custom Events (Fake Comment / Chat)
+Trong các trường hợp cần lắng nghe sự kiện từ bên ngoài hoặc giữa các thành phần không có quan hệ cha-con trực tiếp, ta có thể dùng `window.dispatchEvent`.
+
+```javascript
+// Lắng nghe sự kiện "lesson-1"
+useEffect(() => {
+  const handleComment = (e) => {
+    console.log(e.detail); // Lấy dữ liệu gửi kèm
   };
 
-  window.addEventListener('scroll', handleScroll);
+  window.addEventListener('lesson-1', handleComment);
 
-  // Cleanup function: Tự động chạy khi unmount
   return () => {
-    window.removeEventListener('scroll', handleScroll);
+    window.removeEventListener('lesson-1', handleComment);
   };
 }, []);
 ```
 
+---
+
+### 5. `useLayoutEffect`
+
+`useLayoutEffect` có cách dùng tương tự `useEffect`, nhưng nó khác biệt ở **thời điểm thực thi**. Nó được dùng để xử lý các vấn đề về giao diện bị "nháy" (flicker) khi state thay đổi.
+
+#### a. So sánh thứ tự thực hiện
+
+| Đặc điểm | `useEffect` | `useLayoutEffect` |
+| :--- | :--- | :--- |
+| **Thứ tự** | Sau khi UI đã render | Trước khi UI render (Sync) |
+| **Trải nghiệm** | Có thể thấy UI bị nháy giá trị cũ | UI luôn mượt mà, không nháy |
+| **Hiệu năng** | Tốt hơn (Bất đồng bộ) | Kém hơn một chút (Chặn render) |
+
+#### b. Luồng hoạt động
+
+**useEffect:**
+1. Cập nhật lại state.
+2. Cập nhật DOM (mutated).
+3. Render lại UI.
+4. Gọi cleanup nếu deps thay đổi.
+5. Gọi `useEffect` callback.
+
+**useLayoutEffect:**
+1. Cập nhật lại state.
+2. Cập nhật DOM (mutated).
+3. Gọi cleanup nếu deps thay đổi (Sync).
+4. Gọi `useLayoutEffect` callback (Sync).
+5. Render lại UI.
+
+#### c. Khi nào nên dùng?
+- Khi cần tính toán lại kích thước hoặc vị trí của một phần tử DOM ngay khi nó xuất hiện.
+- Khi cần sửa đổi giá trị hiển thị mà giá trị đó phụ thuộc vào một state vừa thay đổi (ví dụ: Reset counter về 0 khi vượt quá 10).
+
+```javascript
+import { useLayoutEffect, useState } from 'react';
+
+function App() {
+  const [count, setCount] = useState(0);
+
+  useLayoutEffect(() => {
+    if (count > 3) {
+      setCount(0); // Sẽ không bao giờ thấy số 4 hiển thị trên màn hình
+    }
+  }, [count]);
+
+  return (
+    <div>
+      <h1>{count}</h1>
+      <button onClick={() => setCount(count + 1)}>Increase</button>
+    </div>
+  );
+}
+```
+
+---
+
+### 6. `useRef`
+
+`useRef` trả về một đối tượng ref có thuộc tính `.current` được khởi tạo bằng đối số truyền vào. Giá trị trả về sẽ **tồn tại xuyên suốt vòng đời** của component.
+
+#### a. Đặc điểm quan trọng
+1. **Không gây re-render**: Khi bạn thay đổi giá trị của `ref.current`, component sẽ **không** bị render lại (khác hoàn toàn với `useState`).
+2. **Lưu tham chiếu**: Thường dùng để lưu các giá trị bên ngoài luồng render (như Timer ID, hoặc giá trị cũ của state).
+3. **Truy cập DOM**: Dùng để lấy tham chiếu trực tiếp đến một phần tử HTML.
+
+#### b. Các trường hợp sử dụng
+
+##### 1. Lưu giá trị bền vững (Timer ID)
+Nếu bạn lưu `timerId` bằng một biến thường (`let timerId`), khi component re-render, biến đó sẽ bị reset về `undefined`. `useRef` giúp giữ lại giá trị đó.
+
+```javascript
+const timerId = useRef();
+
+const handleStart = () => {
+  timerId.current = setInterval(() => {
+    setCount(prev => prev - 1);
+  }, 1000);
+};
+
+const handleStop = () => {
+  clearInterval(timerId.current);
+};
+```
+
+##### 2. Truy cập DOM element
+Sử dụng thuộc tính `ref` của React để liên kết với một phần tử.
+
+```javascript
+const h1Ref = useRef();
+
+useEffect(() => {
+  // Lấy tọa độ, kích thước của thẻ h1 sau khi mount
+  const rect = h1Ref.current.getBoundingClientRect();
+  console.log(rect);
+}, []);
+
+return <h1 ref={h1Ref}>Hello</h1>;
+```
+
+##### 3. Lưu giá trị cũ (Previous State)
+Vì `useEffect` chạy sau khi render, ta có thể tận dụng nó để lưu lại giá trị của render hiện tại vào ref để dùng cho render kế tiếp.
+
+```javascript
+const prevCount = useRef();
+
+useEffect(() => {
+  prevCount.current = count;
+}, [count]);
+
+console.log('Current:', count, 'Previous:', prevCount.current);
+```
+
+---
