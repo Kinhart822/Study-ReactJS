@@ -1,17 +1,16 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useState } from "react";
+import Content from "./Content";
 
-// 1. useState: Cơ bản với kiểu dữ liệu nguyên thủy (số)
-// Giải thích: 
-// - counter: Trạng thái hiện tại (bắt đầu là 1)
-// - setCounter: Hàm dùng để cập nhật trạng thái
-// - handleIncrease: Hàm tăng giá trị counter lên 1 mỗi khi click
+/**
+ * 1. useState: Cơ bản với kiểu dữ liệu nguyên thủy (số)
+ * Giải thích: 
+ * - counter: Trạng thái hiện tại (bắt đầu là 1)
+ * - setCounter: Hàm dùng để cập nhật trạng thái
+ * - handleIncrease: Hàm tăng giá trị counter lên 1 mỗi khi click
+ */
 // function App() {
 //   const [counter, setCounter] = useState(1);
-
-//   const handleIncrease = () => {
-//     setCounter(counter + 1);
-//   };
-
+//   const handleIncrease = () => setCounter(counter + 1);
 //   return (
 //     <div className="App">
 //       <h1>{counter}</h1>
@@ -20,24 +19,12 @@ import { useEffect, useRef, useState } from "react";
 //   );
 // }
 
-// 2. useState: Xử lý với Object
-// Giải thích:
-// - Khi cập nhật object/array trong React, cần dùng toán tử spread (...) 
-//   để bảo lưu các thuộc tính cũ, nếu không chúng sẽ bị mất (ghi đè hoàn toàn).
+/**
+ * 2. useState: Xử lý với Object
+ */
 // function App() {
-//   const [info, setInfo] = useState({
-//     name: "John",
-//     age: 30,
-//     address: "123 Main St",
-//   });
-
-//   const handleUpdate = () => {
-//     setInfo({
-//       ...info,
-//       bio: "Hello World", // Thêm thuộc tính bio mà không làm mất name, age, address
-//     });
-//   };
-
+//   const [info, setInfo] = useState({ name: "John", age: 30 });
+//   const handleUpdate = () => setInfo({ ...info, bio: "Hello World" });
 //   return (
 //     <div className="App">
 //       <h1>{JSON.stringify(info)}</h1>
@@ -46,18 +33,16 @@ import { useEffect, useRef, useState } from "react";
 //   );
 // }
 
-// 3. Ứng dụng: Lấy phần thưởng ngẫu nhiên
-// Giải thích: Sử dụng Math.random để chọn ngẫu nhiên phần tử trong mảng.
+/**
+ * 3. Ứng dụng: Lấy phần thưởng ngẫu nhiên
+ */
 // const gifts = ["CPU", "RAM", "SSD"];
-
 // function App() {
 //   const [gift, setGift] = useState(gifts[0]);
-
 //   const randomGift = () => {
 //     const randomGift = gifts[Math.floor(Math.random() * gifts.length)];
 //     setGift(randomGift);
 //   };
-
 //   return (
 //     <div className="App">
 //       <h1>{gift || "Chưa có phần thưởng"}</h1>
@@ -66,11 +51,14 @@ import { useEffect, useRef, useState } from "react";
 //   );
 // }
 
-// 4. One-way / Two-way binding & LocalStorage
-// Giải thích:
-// - One-way binding: Dữ liệu từ component xuống UI (render).
-// - Two-way binding: Dữ liệu từ UI cập nhật ngược lại state (qua onChange/value).
-// - localStorage: Lưu dữ liệu bền vững ở trình duyệt.
+/**
+ * 4. One-way / Two-way binding & LocalStorage
+ * Giải thích:
+ * - One-way binding: Dữ liệu từ component xuống UI (render).
+ * - Two-way binding: Dữ liệu từ UI cập nhật ngược lại state (qua onChange/value).
+ * - localStorage: Lưu dữ liệu bền vững ở trình duyệt.
+ */
+
 // const course = [
 //   { id: 1, name: "HTML, CSS" },
 //   { id: 2, name: "JavaScript" },
@@ -109,7 +97,7 @@ import { useEffect, useRef, useState } from "react";
 //     setTodos(prev => {
 //       const newTodos = [...prev, todo];
 //       localStorage.setItem("todos", JSON.stringify(newTodos));
-//       return newTodos
+//       return newTodos;
 //     });
 //     setTodo(""); // Reset ô nhập liệu
 //   };
@@ -149,7 +137,9 @@ import { useEffect, useRef, useState } from "react";
 //   );
 // }
 
-// Mounted / Unmounted
+/**
+ * 5. Mounted / Unmounted
+ */
 // function Content() {
 //   return (
 //     <div>
@@ -173,7 +163,9 @@ import { useEffect, useRef, useState } from "react";
 //   );
 // }
 
-// 5. useEffect: Xử lý Side Effects (API calls, DOM events, v.v.)
+/**
+ * 6. useEffect: Xử lý Side Effects (API calls, DOM events, v.v.)
+ */
 // const lessons = [
 //   { id: 1, name: "ReactJS" },
 //   { id: 2, name: "JavaScript" },
@@ -219,231 +211,19 @@ import { useEffect, useRef, useState } from "react";
 //   // - Callback được gọi khi 'type' thay đổi.
 //   // - Dùng để call API mỗi khi chuyển Tab.
 //   useEffect(() => {
-//     fetch(`https://jsonplaceholder.typicode.com/${type}`)
-//       .then((res) => res.json())
-//       .then((data) => {
-//         setPosts(data);
-//       });
-//   }, [type]);
-
-//   // CASE 2: useEffect(callback, [])
-//   // - Chỉ gọi callback 1 lần duy nhất sau khi Component mounted.
-//   // - Dùng để đăng ký các DOM Event listener.
-//   useEffect(() => {
-//     const handleScroll = () => {
-//       // Logic: Nếu cuộn quá 200px thì hiện nút Go to Top
-//       if (window.scrollY >= 200) {
-//         setShowGoToTop(true);
-//       } else {
-//         setShowGoToTop(false);
-//       }
-//     };
-
-//     window.addEventListener("scroll", handleScroll);
-
-//     // CLEANUP FUNCTION: Cực kỳ quan trọng để tránh Memory Leak
-//     // Hàm này sẽ tự động được gọi trước khi Component bị gỡ bỏ (unmounted)
-//     return () => {
-//       window.removeEventListener("scroll", handleScroll);
-//     };
-//   }, []);
-
-//   // CASE 3: useEffect(callback, [])
-//   // - Dùng để cập nhật chiều rộng màn hình mỗi khi resize.
-//   // - Nên dùng [] để listener chỉ được add 1 lần duy nhất khi Mount.
-//   useEffect(() => {
-//     const handleResize = () => {
-//       setWidth(window.innerWidth);
-//     };
-
-//     window.addEventListener("resize", handleResize);
-
-//     // CLEANUP FUNCTION
-//     return () => {
-//       window.removeEventListener("resize", handleResize);
-//     };
-//   }, []);
-
-//   // CASE 4: useEffect(callback, [])
-//   // - Dùng để cập nhật đồng hồ đếm ngược mỗi giây.
-//   // - Tại sao dùng []? Để setInterval chỉ chạy duy nhất 1 lần.
-//   useEffect(() => {
-//     // Cách dùng setCountdown(countdown - 1) sẽ bị lỗi Closure (luôn lấy giá trị 180 ban đầu)
-//     // Vì vậy phải dùng callback: (prev) => prev - 1 để lấy giá trị mới nhất của State
-//     // setInterval(() => {
-//     //   setCountdown(countdown -1)
-//     //   console.log(countdown); 
-//     // }, 1000); 
-
-//     const timer = setInterval(() => {
-//       setCountdown((prev) => prev - 1);
-//       console.log('Countdown counting...');
-//     }, 1000);
-
-//     // CLEANUP FUNCTION: Dọn dẹp timer khi component Unmount để tránh Memory Leak
-//     return () => {
-//       clearInterval(timer);
-//     };
-//   }, []);
-
-//   // CASE 5: useEffect(callback, [])
-//   useEffect(() => {
-//     console.log('Mounted or Re-render');
-
-//     // CLEANUP FUNCTION
-//     return () => {
-//       console.log('Cleanup');
-//     };
+//     document.title = `Count: ${count}`;
 //   }, [count]);
-
-//   // CASE 6: Preview ảnh
-//   useEffect(() => {
-//     return () => {
-//       avatar && URL.revokeObjectURL(avatar.preview);
-//     };
-//   }, [avatar]);
-
-//   const handlePreviewImage = (e) => {
-//     const file = e.target.files[0];
-//     file.preview = URL.createObjectURL(file);
-//     setAvatar(file);
-//     console.log(file.preview);
-//   };
-
-//   // CASE 7: Lắng nghe Custom Event (Fake Comment)
-//   useEffect(() => {
-//     const handleComment = (e) => {
-//       console.log(e.detail);
-//     };
-
-//     window.addEventListener(`lesson-${lessonId}`, handleComment);
-
-//     // CLEANUP FUNCTION
-//     return () => {
-//       window.removeEventListener(`lesson-${lessonId}`, handleComment);
-//     };
-//   }, [lessonId]);
-
 //   return (
-//     <div className="App" style={{ padding: 32 }}>
-
-//       {/* Nút đóng/mở nội dung để demo Mounted/Unmounted */}
-//       <button onClick={() => setShowContent(!showContent)}>
-//         {showContent ? "Hide Content" : "Show Content"}
-//       </button>
-
-//       {showContent && (
-//         <div>
-//           {/* Tabs điều hướng: Mỗi tab tương ứng với một loại dữ liệu (posts, comments, albums) */}
-//           <div>
-//             {tabs.map((tab) => (
-//               <button
-//                 key={tab}
-//                 onClick={() => setType(tab)}
-//                 style={
-//                   tab === type
-//                     ? {
-//                       margin: 8,
-//                       padding: 8,
-//                       cursor: "pointer",
-//                       color: "#fff",
-//                       backgroundColor: "#000",
-//                     }
-//                     : {
-//                       margin: 8,
-//                       padding: 8,
-//                       cursor: "pointer",
-//                       color: "#000",
-//                       backgroundColor: "#fff",
-//                     }
-//                 }
-//               >
-//                 {tab}
-//               </button>
-//             ))}
-//           </div>
-
-//           {/* Nút Go to Top: Chỉ hiển thị khi showGoToTop === true (scroll > 200px) */}
-//           {showGoToTop && (
-//             <button
-//               style={{
-//                 position: "fixed",
-//                 bottom: 20,
-//                 right: 20,
-//                 padding: 8,
-//                 cursor: "pointer",
-//               }}
-//               onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-//             >
-//               Go to Top
-//             </button>
-//           )}
-
-//           <div>
-//             {/* Input tiêu đề: Demo cơ chế Two-way binding và useEffect re-render */}
-//             <input
-//               type="text"
-//               value={title}
-//               onChange={(e) => setTitle(e.target.value)}
-//               placeholder="Nhập tiêu đề..."
-//             />
-//             {/* Hiển thị danh sách dữ liệu lấy từ API */}
-//             <ul>
-//               {posts.map((post) => (
-//                 <li key={post.id}>{post.title || post.name}</li>
-//               ))}
-//             </ul>
-//           </div>
-
-//           {/* Hiển thị chiều rộng màn hình */}
-//           <div>
-//             <h1>{width}</h1>
-//           </div>
-
-//           {/* Đồng hồ đếm ngược */}
-//           <div>
-//             <h1>{countdown}</h1>
-//           </div>
-
-//           {/* Bộ đếm */}
-//           <div>
-//             <h1>{count}</h1>
-//             <button onClick={() => setCount(count + 1)}>Increase</button>
-//           </div>
-
-//           {/* Upload ảnh */}
-//           <div>
-//             <input type="file" onChange={handlePreviewImage} />
-//             {avatar && <img src={avatar.preview} alt="Preview" width={200} height={200} />}
-//           </div>
-
-//           {/* Dropdown chọn bài học */}
-//           <div>
-//             <ul>
-//               {lessons.map((lesson) => (
-//                 <li
-//                   key={lesson.id}
-//                   style={{
-//                     padding: 8,
-//                     cursor: "pointer",
-//                     color: lessonId === lesson.id ? "red" : "#333",
-//                   }}
-//                   onClick={() => setLessonId(lesson.id)}>
-//                   {lesson.name}
-//                 </li>
-//               ))}
-//             </ul>
-//           </div>
-//         </div>
-//       )}
+//     <div className="App">
+//       <h1>{count}</h1>
+//       <button onClick={() => setCount(count + 1)}>Increase</button>
 //     </div>
 //   );
 // }
 
-// 6. useLayoutEffect
 /**
+ * 7. useLayoutEffect
  * SO SÁNH THỨ TỰ THỰC THI
- * 
  * useEffect:
  * 1. Cập nhật lại state
  * 2. Cập nhật DOM (mutated)
@@ -490,7 +270,7 @@ import { useEffect, useRef, useState } from "react";
 // }
 
 /**
- * 7. useRef Hook
+ * 8. useRef Hook
  * 
  * Mục đích: 
  * 1. Lưu các giá trị qua tham chiếu bên ngoài function component 
@@ -502,76 +282,174 @@ import { useEffect, useRef, useState } from "react";
  * - useRef trả về một đối tượng có thuộc tính 'current'.
  * - Khi giá trị trong 'current' thay đổi, component KHÔNG re-render.
  */
+// function App() {
+//   const [count, setCount] = useState(60);
+
+//   // const timerIdRef = useRef(99); // object
+//   // console.log(timerIdRef.current);
+
+//   // let timerId;
+
+//   // 1. Lưu giá trị bền vững (Timer ID)
+//   // Nếu dùng biến thường (let timerId), nó sẽ bị reset về undefined mỗi khi re-render
+//   const timerId = useRef();
+
+//   // 2. Lưu giá trị cũ (Previous State)
+//   const prevCount = useRef();
+
+//   // 3. Truy cập DOM element
+//   const h1Ref = useRef();
+
+//   // Mỗi khi count thay đổi, lưu lại giá trị hiện tại vào prevCount
+//   // useEffect chạy sau render nên prevCount.current lúc in ra ở thân hàm sẽ là giá trị CŨ
+//   useEffect(() => {
+//     prevCount.current = count;
+//   }, [count]);
+
+//   // Lấy thông tin tọa độ/kích thước thẻ h1 sau khi mount
+//   useEffect(() => {
+//     const rect = h1Ref.current.getBoundingClientRect();
+//     console.log('DOM Rect:', rect);
+//   }, []);
+
+//   const handleStart = () => {
+//     // Ngăn chặn tạo nhiều timer nếu bấm Start liên tục
+//     if (timerId.current) return;
+
+//     timerId.current = setInterval(() => {
+//       setCount(prev => prev - 1);
+//     }, 1000);
+//     console.log('Start Timer ID:', timerId.current);
+//   };
+
+//   const handleStop = () => {
+//     // ban đầu là id vẫn có thể log ra là 60
+//     // nhưng nếu để tiếp tục sẽ undefined
+//     // vì khi re-render thì hàm App() sẽ được gọi lại và timerId sẽ bị reset về undefined 
+//     // console.log('timerId', timerId);
+//     // clearInterval(timerId);
+
+//     console.log('Stop Timer ID:', timerId.current);
+//     clearInterval(timerId.current);
+//     timerId.current = null; // Reset ref
+//   };
+
+//   // Xem sự thay đổi giữa giá trị hiện tại và giá trị cũ
+//   console.log(`Current: ${count} | Previous: ${prevCount.current}`);
+
+//   return (
+//     <div className="App" style={{ padding: 32 }}>
+//       <h1 ref={h1Ref} style={{ fontSize: '4rem' }}>{count}</h1>
+//       <button
+//         style={{ padding: '8px 16px', marginRight: 8 }}
+//         onClick={handleStart}
+//       >
+//         Start
+//       </button>
+//       <button
+//         style={{ padding: '8px 16px' }}
+//         onClick={handleStop}
+//       >
+//         Stop
+//       </button>
+//     </div>
+//   );
+// }
+
+/**
+ * 9. React.memo() HOC
+ * 
+ * Khái niệm: 
+ * - memo() là một Higher Order Component (HOC).
+ * - Dùng để bao bọc các component con nhằm tránh việc chúng bị re-render 
+ *   không cần thiết khi component cha re-render.
+ * 
+ * Khi nào sử dụng:
+ * - Khi component con nhận vào các props "nguyên thủy" (string, number, boolean) 
+ *   và bạn muốn nó chỉ render lại khi các props này thực sự thay đổi.
+ * - Tránh lãng phí tài nguyên xử lý UI.
+ */
+
+// function App() {
+//   const [count, setCount] = useState(0);
+//   const [count2, setCount2] = useState(0);
+
+//   const increase = () => {
+//     setCount(prev => prev + 1);
+//   };
+
+//   const increase2 = () => {
+//     setCount2(prev => prev + 1);
+//   };
+
+//   return (
+//     <div className="App" style={{ padding: 32 }}>
+//       {/* 
+//               Component Content chỉ nhận prop 'count'. 
+//               Nhờ React.memo, khi chúng ta bấm 'Increase 2' (chỉ thay đổi count2),
+//               Content sẽ KHÔNG bị re-render (Check console log).
+//             */}
+//       <Content count={count} />
+
+//       <div style={{ marginTop: 20 }}>
+//         <h1>Count 1: {count}</h1>
+//         <h1>Count 2: {count2}</h1>
+//         <button onClick={increase}>Increase 1 (Affects Content)</button>
+//         <button onClick={increase2} style={{ marginLeft: 10 }}>
+//           Increase 2 (Does not affect Content)
+//         </button>
+//       </div>
+//     </div>
+//   );
+// }
+
+/**
+ * 10. useCallback Hook
+ * 
+ * Khái niệm: 
+ * - Dùng để tránh việc tạo mới một hàm không cần thiết sau mỗi lần re-render.
+ * - Giải quyết vấn đề re-render của component con khi truyền object, array, function qua props 
+ *   (nếu component con đã được bao bọc bởi React.memo).
+ * 
+ * Cách hoạt động:
+ * - useCallback nhận vào một callback function và một mảng dependencies.
+ * - Nó sẽ trả về một memoized version của callback (giữ nguyên địa chỉ vùng nhớ).
+ * - Hàm chỉ được tạo mới khi một trong các dependencies thay đổi.
+ */
 function App() {
-  const [count, setCount] = useState(60);
+  const [count, setCount] = useState(0);
 
-  // const timerIdRef = useRef(99); // object
-  // console.log(timerIdRef.current);
+  /**
+   * ❌ Cách chưa tối ưu:
+   * Mỗi lần App re-render, hàm này sẽ được tạo mới (địa chỉ vùng nhớ mới).
+   * Dẫn đến component con (Content) sẽ luôn bị re-render vì prop 'onIncrease' thay đổi,
+   * mặc dù Content đã được bọc trong React.memo().
+   */
+  // const handleIncrease = () => {
+  //   setCount(prev => prev + 1);
+  // };
 
-  // let timerId;
-
-  // 1. Lưu giá trị bền vững (Timer ID)
-  // Nếu dùng biến thường (let timerId), nó sẽ bị reset về undefined mỗi khi re-render
-  const timerId = useRef();
-
-  // 2. Lưu giá trị cũ (Previous State)
-  const prevCount = useRef();
-
-  // 3. Truy cập DOM element
-  const h1Ref = useRef();
-
-  // Mỗi khi count thay đổi, lưu lại giá trị hiện tại vào prevCount
-  // useEffect chạy sau render nên prevCount.current lúc in ra ở thân hàm sẽ là giá trị CŨ
-  useEffect(() => {
-    prevCount.current = count;
-  }, [count]);
-
-  // Lấy thông tin tọa độ/kích thước thẻ h1 sau khi mount
-  useEffect(() => {
-    const rect = h1Ref.current.getBoundingClientRect();
-    console.log('DOM Rect:', rect);
-  }, []);
-
-  const handleStart = () => {
-    // Ngăn chặn tạo nhiều timer nếu bấm Start liên tục
-    if (timerId.current) return;
-
-    timerId.current = setInterval(() => {
-      setCount(prev => prev - 1);
-    }, 1000);
-    console.log('Start Timer ID:', timerId.current);
-  };
-
-  const handleStop = () => {
-    // ban đầu là id vẫn có thể log ra là 60
-    // nhưng nếu để tiếp tục sẽ undefined
-    // vì khi re-render thì hàm App() sẽ được gọi lại và timerId sẽ bị reset về undefined 
-    // console.log('timerId', timerId);
-    // clearInterval(timerId);
-
-    console.log('Stop Timer ID:', timerId.current);
-    clearInterval(timerId.current);
-    timerId.current = null; // Reset ref
-  };
-
-  // Xem sự thay đổi giữa giá trị hiện tại và giá trị cũ
-  console.log(`Current: ${count} | Previous: ${prevCount.current}`);
+  /**
+   * ✅ Cách xử lý đúng: 
+   * Dùng useCallback để "ghi nhớ" (memoize) hàm này.
+   * Nó sẽ trả về một tham chiếu hàm duy nhất qua các lần render nếu dependencies không đổi.
+   * => Giúp React.memo ở component con hoạt động hiệu quả.
+   */
+  const handleIncrease = useCallback(() => {
+    setCount(prev => prev + 1);
+  }, []); // [] : Chỉ khởi tạo hàm 1 lần duy nhất khi Mount
 
   return (
     <div className="App" style={{ padding: 32 }}>
-      <h1 ref={h1Ref} style={{ fontSize: '4rem' }}>{count}</h1>
-      <button
-        style={{ padding: '8px 16px', marginRight: 8 }}
-        onClick={handleStart}
-      >
-        Start
-      </button>
-      <button
-        style={{ padding: '8px 16px' }}
-        onClick={handleStop}
-      >
-        Stop
-      </button>
+      {/* 
+          - Tên props bắt đầu bằng 'on' (onIncrease) để thể hiện sự kiện.
+          - Tên hàm xử lý bắt đầu bằng 'handle' (handleIncrease).
+      */}
+      <Content onIncrease={handleIncrease} />
+
+      <div style={{ marginTop: 20 }}>
+        <h1>Count: {count}</h1>
+      </div>
     </div>
   );
 }
