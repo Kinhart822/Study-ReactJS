@@ -1336,3 +1336,70 @@ export default counterSlice.reducer;
 | **Cài đặt**         | Có sẵn trong React (Zero dependency).                      | Cần cài đặt thư viện ngoài (`@reduxjs/toolkit`, `react-redux`).      |
 | **Gỡ lỗi (Debug)**  | Khó theo dõi luồng state (thường phải dùng `console.log`). | Cực kỳ trực quan thông qua công cụ chuyên nghiệp **Redux DevTools**. |
 | **Phạm vi áp dụng** | Phù hợp với các ứng dụng quy mô **Nhỏ & Vừa**.             | Thiết yếu cho các dự án **Lớn**, có nhiều members.                   |
+
+---
+
+### 14. `useImperativeHandle`
+
+`useImperativeHandle` là một Hook cho phép bạn tùy chỉnh giá trị được expose (bộc lộ) qua tính năng **Ref** từ component con lên component cha. Nó thường được sử dụng kết hợp với `forwardRef`.
+
+#### a. Vấn đề với `forwardRef` thông thường
+
+Khi bạn truyền thẳng Ref xuống một thẻ DOM gốc ở component con (VD: `<video ref={ref} />`), component cha sẽ có **toàn quyền kiểm soát** element đó.
+Điều này làm mất đi **Tính đóng gói (Encapsulation)** của React component. Component cha có thể sử dụng các hàm can thiệp sâu (như `.remove()`, `.style.display='none'`) làm cho logic của component con bị hỏng hóc hoặc chạy mất kiểm soát.
+
+#### b. Giải pháp: Chỉ cấp quyền với `useImperativeHandle`
+
+Hook này giúp component con đóng vai trò như một "lớp bảo vệ", chủ động quyết định sẽ cung cấp cho component cha những phương thức hoặc thuộc tính nào.
+
+**Ví dụ (Trình phát Video):**
+
+_Tệp `Video.js` (Component con)_
+
+```javascript
+import { forwardRef, useImperativeHandle, useRef } from "react";
+import demoVideo from "./videos/demo.mp4";
+
+function Video(props, ref) {
+  const videoRef = useRef();
+
+  // Giới hạn quyền: chỉ gửi lên 2 hàm play() và pause()
+  useImperativeHandle(ref, () => ({
+    play() {
+      videoRef.current.play();
+    },
+    pause() {
+      videoRef.current.pause();
+    },
+  }));
+
+  // Gắn thẻ DOM thực tế vào ref nội bộ
+  return <video ref={videoRef} src={demoVideo} width={280} />;
+}
+
+export default forwardRef(Video);
+```
+
+_Tệp `App.js` (Component cha)_
+
+```javascript
+import { useRef } from "react";
+import Video from "./Video";
+
+function App() {
+  const videoInstance = useRef();
+
+  const handlePlay = () => {
+    videoInstance.current.play(); // Chạy tốt
+    // videoInstance.current.remove(); => Sẽ báo lỗi vì hàm này không được expose!
+  };
+
+  return (
+    <div>
+      <Video ref={videoInstance} />
+      <button onClick={handlePlay}>Play Mượt</button>
+      <button onClick={() => videoInstance.current.pause()}>Dừng Lại</button>
+    </div>
+  );
+}
+```

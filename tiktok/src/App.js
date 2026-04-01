@@ -1,6 +1,5 @@
+import { useEffect, useRef } from 'react';
 import './App.css';
-import { actions, useStore } from './store';
-import { useRef } from 'react';
 
 /**
  * 1. useState: Cơ bản với kiểu dữ liệu nguyên thủy (số)
@@ -676,40 +675,41 @@ import { useRef } from 'react';
 /**
  * 15. Context + useReducer
  */
-function App() {
+// function App() {
 
-  const [state, dispatch] = useStore();
-  console.log(state);
+//   const [state, dispatch] = useStore();
+//   console.log(state);
 
-  const { todoInput, todos } = state;
+//   const { todoInput, todos } = state;
 
-  const inputRef = useRef();
+//   const inputRef = useRef();
 
-  const handleAddTodo = () => {
-    dispatch(actions.addTodo());
-    inputRef.current.focus();
-  };
+//   const handleAddTodo = () => {
+//     dispatch(actions.addTodo());
+//     inputRef.current.focus();
+//   };
 
 
-  return (
-    <div>
-      <input
-        ref={inputRef}
-        value={todoInput}
-        placeholder='Enter todo'
-        onChange={(e) => {
-          dispatch(actions.setTodoInput(e.target.value))
-        }}
-      />
-      <button onClick={handleAddTodo}>Add</button>
-      <ul>
-        {todos.map((todo, index) => (
-          <li key={index}>{todo}</li>
-        ))}
-      </ul>
-    </div>
-  );
-}
+//   return (
+//     <div>
+//       <input
+//         ref={inputRef}
+//         value={todoInput}
+//         placeholder='Enter todo'
+//         onChange={(e) => {
+//           dispatch(actions.setTodoInput(e.target.value))
+//         }}
+//       />
+//       <button onClick={handleAddTodo}>Add</button>
+//       <ul>
+//         {todos.map((todo, index) => (
+//           <li key={index}>{todo}</li>
+//         ))}
+//       </ul>
+//     </div>
+//   );
+// }
+
 /**
  * 16. So sánh Context + useReducer vs Redux
  * 
@@ -726,5 +726,71 @@ function App() {
 
 // Mọi thứ vừa làm trong thư mục store/ chính là "tự tay" 
 // xây dựng một mini-Redux bằng React Hooks.
+
+/**
+ * 17. useImperativeHandle hook
+ * 
+ * Khái niệm:
+ * - Tùy chỉnh (Customize) ref của một component con khi truyền ref từ component cha xuống.
+ * - Giải quyết vấn đề mất "tính đóng gói" (Encapsulation) của component con. Thay vì
+ *   expose toàn bộ DOM node bị gắn ref (khiến component cha có thể tùy ý thay đổi), 
+ *   ta chỉ expose những API (phương thức/thuộc tính) mà mình cho phép.
+ */
+
+import Video from "./Video";
+
+function App() {
+  const videoInstanceRef = useRef();
+
+  useEffect(() => {
+    // Lúc này videoInstanceRef.current chỉ chứa đối tượng có 2 hàm { play, pause }
+    console.log("Ref được expose từ Video component:", videoInstanceRef.current);
+  }, []);
+
+  const handlePlay = () => {
+    // Không thể gán videoInstanceRef.current.remove() hay các hành động nguy hiểm khác
+    videoInstanceRef.current.play();
+  };
+
+  const handlePause = () => {
+    videoInstanceRef.current.pause();
+  };
+
+  return (
+    <div style={{ padding: '40px', textAlign: 'center' }}>
+      <h1 style={{ color: '#2f3542', fontSize: '2rem', marginBottom: '30px' }}>
+        useImperativeHandle Demo
+      </h1>
+
+      <div style={{ marginBottom: '20px' }}>
+        <Video ref={videoInstanceRef} />
+      </div>
+      {/* Mặc định function component không nhận ref, nên cần forwardRef bọc lại ref*/}
+      {/* Tuy nhiên nếu làm theo cách này sẽ làm mất đi tính đóng gói của component con,
+       vì nó cho phép component con "bộc lộ" một số phương thức hoặc giá trị cụ thể cho component cha thông qua ref làm cho component cha có thể can thiệp vào logic bên trong component con */}
+
+      <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
+        <button
+          onClick={handlePlay}
+          style={{
+            padding: '10px 25px', backgroundColor: '#2ed573', color: '#fff',
+            border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold'
+          }}
+        >
+          Play
+        </button>
+        <button
+          onClick={handlePause}
+          style={{
+            padding: '10px 25px', backgroundColor: '#ff4757', color: '#fff',
+            border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold'
+          }}
+        >
+          Pause
+        </button>
+      </div>
+    </div>
+  );
+}
 
 export default App;
