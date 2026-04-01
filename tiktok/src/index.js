@@ -1,9 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.css';
 import App from './App';
+import './index.css';
 import reportWebVitals from './reportWebVitals';
-import { ThemeProvider } from './ThemeProvider';
+import { StoreProvider } from './store/index';
 
 // Fake comment
 function emitComment(id) {
@@ -24,9 +24,12 @@ emitComment(3);
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <ThemeProvider>
+    {/* <ThemeProvider>
       <App />
-    </ThemeProvider>
+    </ThemeProvider> */}
+    <StoreProvider>
+      <App />
+    </StoreProvider>
   </React.StrictMode>
 );
 

@@ -1,7 +1,6 @@
-import { useContext } from 'react';
 import './App.css';
-import Content from "./Content";
-import { ThemeContext } from "./ThemeProvider";
+import { actions, useStore } from './store';
+import { useRef } from 'react';
 
 /**
  * 1. useState: Cơ bản với kiểu dữ liệu nguyên thủy (số)
@@ -651,27 +650,81 @@ import { ThemeContext } from "./ThemeProvider";
  * 3. Consumer: Thành phần sử dụng dữ liệu (thông qua useContext Hook).
  */
 
+// function App() {
+//   /**
+//    * - useContext nhận vào một Context Object (từ createContext).
+//    * - Nó trả về giá trị hiện tại của context đó (từ Provider gần nhất).
+//    */
+//   const context = useContext(ThemeContext);
+
+//   return (
+//     <div style={{ padding: '32px', textAlign: 'center' }}>
+//       <h1 style={{ color: '#2f3542' }}>useContext Hook Demo</h1>
+
+//       <button
+//         onClick={context.toggleTheme}
+//       >
+//         Toggle Theme
+//       </button>
+
+//       {/* Component Content và các con của nó đều có thể truy cập ThemeContext */}
+//       <Content />
+//     </div>
+//   );
+// }
+
+/**
+ * 15. Context + useReducer
+ */
 function App() {
-  /**
-   * - useContext nhận vào một Context Object (từ createContext).
-   * - Nó trả về giá trị hiện tại của context đó (từ Provider gần nhất).
-   */
-  const context = useContext(ThemeContext);
+
+  const [state, dispatch] = useStore();
+  console.log(state);
+
+  const { todoInput, todos } = state;
+
+  const inputRef = useRef();
+
+  const handleAddTodo = () => {
+    dispatch(actions.addTodo());
+    inputRef.current.focus();
+  };
+
 
   return (
-    <div style={{ padding: '32px', textAlign: 'center' }}>
-      <h1 style={{ color: '#2f3542' }}>useContext Hook Demo</h1>
-
-      <button
-        onClick={context.toggleTheme}
-      >
-        Toggle Theme
-      </button>
-
-      {/* Component Content và các con của nó đều có thể truy cập ThemeContext */}
-      <Content />
+    <div>
+      <input
+        ref={inputRef}
+        value={todoInput}
+        placeholder='Enter todo'
+        onChange={(e) => {
+          dispatch(actions.setTodoInput(e.target.value))
+        }}
+      />
+      <button onClick={handleAddTodo}>Add</button>
+      <ul>
+        {todos.map((todo, index) => (
+          <li key={index}>{todo}</li>
+        ))}
+      </ul>
     </div>
   );
 }
+/**
+ * 16. So sánh Context + useReducer vs Redux
+ * 
+ * Redux là gì? 
+ * - Một thư viện bên ngoài (external library) để quản lý state.
+ * - Có chung triết lý với useReducer (Store, Actions, Reducer).
+ * 
+ * Sự khác biệt chính:
+ * 1. Phạm vi: Redux mặc định cho toàn bộ ứng dụng. Context có thể chia nhỏ nhiều Provider.
+ * 2. Công cụ: Redux có DevTools mạnh mẽ để "du hành thời gian" (Time Travel Debugging).
+ * 3. Middleware: Redux hỗ trợ middleware cực mạnh thông qua hệ sinh thái (Redux Thunk, Redux Saga).
+ * 4. Hiệu năng: Redux tối ưu re-render tốt hơn cho các app cực lớn.
+ */
+
+// Mọi thứ vừa làm trong thư mục store/ chính là "tự tay" 
+// xây dựng một mini-Redux bằng React Hooks.
 
 export default App;

@@ -17,6 +17,7 @@ Kho lưu trữ kiến thức cơ bản tổng hợp về **ReactJS**.
 3. [Phần 3: React + Webpack (Tự cấu hình)](#-phần-3-react--webpack-tự-cấu-hình)
 4. [Phần 4: Create React App & Modern Tools](#-phần-4-create-react-app--modern-tools)
 5. [Phần 5: React Hooks](#-phần-5-react-hooks)
+6. [Phần 6: Redux & Redux Toolkit](#-phần-6-redux--redux-toolkit)
 
 ---
 
@@ -922,7 +923,7 @@ const handleAction = useCallback(() => {
 ```jsx
 // App.js (Cha)
 const handleIncrease = useCallback(() => {
-    setCount(prev => prev + 1);
+  setCount((prev) => prev + 1);
 }, []); // [] giúp hàm luôn giữ nguyên tham chiếu
 
 return <Content onIncrease={handleIncrease} />;
@@ -939,18 +940,18 @@ export default memo(Content); // Content chỉ re-render khi onIncrease thực s
 
 #### a. So sánh `useCallback` vs `useMemo`
 
-| Đặc điểm | `useCallback` | `useMemo` |
-| :--- | :--- | :--- |
-| **Mục đích** | Ghi nhớ một **tham chiếu hàm**. | Ghi nhớ một **giá trị** (kết quả của hàm). |
-| **Trả về** | Chính cái hàm đó. | Kết quả sau khi thực thi hàm. |
+| Đặc điểm         | `useCallback`                                                | `useMemo`                                                  |
+| :--------------- | :----------------------------------------------------------- | :--------------------------------------------------------- |
+| **Mục đích**     | Ghi nhớ một **tham chiếu hàm**.                              | Ghi nhớ một **giá trị** (kết quả của hàm).                 |
+| **Trả về**       | Chính cái hàm đó.                                            | Kết quả sau khi thực thi hàm.                              |
 | **Khi nào dùng** | Khi truyền hàm xuống component con (để tránh re-render con). | Khi có logic tính toán nặng (vòng lặp, xử lý mảng lớn...). |
 
 #### b. Cách hoạt động
 
 ```javascript
 const memoizedValue = useMemo(() => {
-    // Logic tính toán phức tạp
-    return result;
+  // Logic tính toán phức tạp
+  return result;
 }, [dependencies]);
 ```
 
@@ -963,8 +964,8 @@ Sử dụng `useMemo` để tính tổng tiền trong giỏ hàng. Nếu ngườ
 
 ```jsx
 const total = useMemo(() => {
-    console.log('Calculating...');
-    return products.reduce((acc, current) => acc + current.price, 0);
+  console.log("Calculating...");
+  return products.reduce((acc, current) => acc + current.price, 0);
 }, [products]); // Chỉ tính lại khi 'products' thay đổi
 ```
 
@@ -974,11 +975,11 @@ const total = useMemo(() => {
 
 #### a. So sánh `useState` vs `useReducer`
 
-| Đặc điểm | `useState` | `useReducer` |
-| :--- | :--- | :--- |
-| **Độ phức tạp** | Phù hợp với state đơn giản (số, chuỗi, boolean, object/array ít tầng). | Phù hợp với state phức tạp, lồng nhau hoặc logic update khó. |
-| **Tính tập trung** | Logic update nằm rải rác trong các event handlers. | Logic update được tập trung tại một hàm Reducer duy nhất. |
-| **Khả năng đọc** | Dễ hiểu cho các task nhỏ. | Dễ bảo trì và mở rộng cho các task lớn. |
+| Đặc điểm           | `useState`                                                             | `useReducer`                                                 |
+| :----------------- | :--------------------------------------------------------------------- | :----------------------------------------------------------- |
+| **Độ phức tạp**    | Phù hợp với state đơn giản (số, chuỗi, boolean, object/array ít tầng). | Phù hợp với state phức tạp, lồng nhau hoặc logic update khó. |
+| **Tính tập trung** | Logic update nằm rải rác trong các event handlers.                     | Logic update được tập trung tại một hàm Reducer duy nhất.    |
+| **Khả năng đọc**   | Dễ hiểu cho các task nhỏ.                                              | Dễ bảo trì và mở rộng cho các task lớn.                      |
 
 #### b. Quy trình 4 bước thực hiện
 
@@ -998,33 +999,33 @@ import { useReducer } from "react";
 const initState = 0;
 
 // 2. Actions
-const UP_ACTION = 'up';
-const DOWN_ACTION = 'down';
+const UP_ACTION = "up";
+const DOWN_ACTION = "down";
 
 // 3. Reducer
 const reducer = (state, action) => {
-    switch (action) {
-        case UP_ACTION:
-            return state + 1;
-        case DOWN_ACTION:
-            return state - 1;
-        default:
-            throw new Error('Invalid action');
-    }
+  switch (action) {
+    case UP_ACTION:
+      return state + 1;
+    case DOWN_ACTION:
+      return state - 1;
+    default:
+      throw new Error("Invalid action");
+  }
 };
 
 // 4. Component
 function App() {
-    // dispatch là hàm dùng để kích hoạt các action
-    const [count, dispatch] = useReducer(reducer, initState);
+  // dispatch là hàm dùng để kích hoạt các action
+  const [count, dispatch] = useReducer(reducer, initState);
 
-    return (
-        <div style={{ padding: 20 }}>
-            <h1>{count}</h1>
-            <button onClick={() => dispatch(DOWN_ACTION)}>Down</button>
-            <button onClick={() => dispatch(UP_ACTION)}>Up</button>
-        </div>
-    );
+  return (
+    <div style={{ padding: 20 }}>
+      <h1>{count}</h1>
+      <button onClick={() => dispatch(DOWN_ACTION)}>Down</button>
+      <button onClick={() => dispatch(UP_ACTION)}>Up</button>
+    </div>
+  );
 }
 ```
 
@@ -1033,6 +1034,7 @@ function App() {
 Trong các dự án thực tế, khi logic trở nên phức tạp, `useReducer` thường được tổ chức bằng cách tách thành nhiều tệp tin riêng biệt để dễ quản lý và tái sử dụng.
 
 **Cấu trúc thư mục tham khảo:**
+
 ```text
 Todo/
 ├── constants.js  # Định nghĩa các hằng số Action
@@ -1045,65 +1047,69 @@ Todo/
 **Chi tiết các thành phần:**
 
 1. **`constants.js`**:
+
 ```javascript
-export const SET_JOB = 'set_job';
-export const ADD_JOB = 'add_job';
-export const DELETE_JOB = 'delete_job';
+export const SET_JOB = "set_job";
+export const ADD_JOB = "add_job";
+export const DELETE_JOB = "delete_job";
 ```
 
 2. **`actions.js`**:
+
 ```javascript
 import { SET_JOB, ADD_JOB, DELETE_JOB } from "./constants";
 
-export const setJob = payload => ({ type: SET_JOB, payload });
-export const addJob = payload => ({ type: ADD_JOB, payload });
-export const deleteJob = payload => ({ type: DELETE_JOB, payload });
+export const setJob = (payload) => ({ type: SET_JOB, payload });
+export const addJob = (payload) => ({ type: ADD_JOB, payload });
+export const deleteJob = (payload) => ({ type: DELETE_JOB, payload });
 ```
 
 3. **`reducer.js`**:
+
 ```javascript
 import { SET_JOB, ADD_JOB, DELETE_JOB } from "./constants";
 
-export const initState = { job: '', jobs: [] };
+export const initState = { job: "", jobs: [] };
 
 const reducer = (state, action) => {
-    switch (action.type) {
-        case SET_JOB:
-            return { ...state, job: action.payload };
-        case ADD_JOB:
-            return { ...state, jobs: [...state.jobs, state.job] };
-        case DELETE_JOB:
-            const newJobs = [...state.jobs];
-            newJobs.splice(action.payload, 1);
-            return { ...state, jobs: newJobs };
-        default:
-            throw new Error('Invalid action');
-    }
+  switch (action.type) {
+    case SET_JOB:
+      return { ...state, job: action.payload };
+    case ADD_JOB:
+      return { ...state, jobs: [...state.jobs, state.job] };
+    case DELETE_JOB:
+      const newJobs = [...state.jobs];
+      newJobs.splice(action.payload, 1);
+      return { ...state, jobs: newJobs };
+    default:
+      throw new Error("Invalid action");
+  }
 };
 
 export default reducer;
 ```
 
 4. **`index.js` (Component chính)**:
+
 ```jsx
 function TodoApp() {
-    const [state, dispatch] = useReducer(logger(reducer), initState);
-    const { job, jobs } = state;
+  const [state, dispatch] = useReducer(logger(reducer), initState);
+  const { job, jobs } = state;
 
-    return (
-        <div>
-            <input value={job} onChange={e => dispatch(setJob(e.target.value))} />
-            <button onClick={() => dispatch(addJob(job))}>Add</button>
-            <ul>
-                {jobs.map((job, index) => (
-                    <li key={index}>
-                        {job} 
-                        <span onClick={() => dispatch(deleteJob(index))}> &times;</span>
-                    </li>
-                ))}
-            </ul>
-        </div>
-    );
+  return (
+    <div>
+      <input value={job} onChange={(e) => dispatch(setJob(e.target.value))} />
+      <button onClick={() => dispatch(addJob(job))}>Add</button>
+      <ul>
+        {jobs.map((job, index) => (
+          <li key={index}>
+            {job}
+            <span onClick={() => dispatch(deleteJob(index))}> &times;</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
 }
 ```
 
@@ -1136,14 +1142,14 @@ import { createContext, useState } from "react";
 export const ThemeContext = createContext();
 
 export function ThemeProvider({ children }) {
-    const [theme, setTheme] = useState('dark');
-    const toggleTheme = () => setTheme(theme === 'dark' ? 'light' : 'dark');
+  const [theme, setTheme] = useState("dark");
+  const toggleTheme = () => setTheme(theme === "dark" ? "light" : "dark");
 
-    return (
-        <ThemeContext.Provider value={{ theme, toggleTheme }}>
-            {children}
-        </ThemeContext.Provider>
-    );
+  return (
+    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+      {children}
+    </ThemeContext.Provider>
+  );
 }
 ```
 
@@ -1153,9 +1159,9 @@ export function ThemeProvider({ children }) {
 import { ThemeProvider } from "./ThemeContext";
 
 root.render(
-    <ThemeProvider>
-        <App />
-    </ThemeProvider>
+  <ThemeProvider>
+    <App />
+  </ThemeProvider>,
 );
 ```
 
@@ -1166,10 +1172,8 @@ import { useContext } from "react";
 import { ThemeContext } from "./ThemeContext";
 
 function Paragraph() {
-    const { theme } = useContext(ThemeContext);
-    return (
-        <p className={theme}>Nội dung này thay đổi theo theme!</p>
-    );
+  const { theme } = useContext(ThemeContext);
+  return <p className={theme}>Nội dung này thay đổi theo theme!</p>;
 }
 ```
 
@@ -1177,3 +1181,158 @@ function Paragraph() {
 
 - Dùng cho các dữ liệu mang tính chất **Global** (toàn cục) như: Ngôn ngữ (i18n), Theme (Dark/Light), Thông tin người dùng đã đăng nhập...
 - Lưu ý: Không nên lạm dụng cho các trường hợp truyền dữ liệu đơn giản giữa cha và con trực tiếp vì sẽ làm giảm khả năng tái sử dụng của component.
+
+---
+
+### 12. Context + useReducer (Mô hình Redux)
+
+Khi ứng dụng trở nên phức tạp, chúng ta có thể kết hợp `useContext` và `useReducer` để xây dựng một hệ thống quản lý trạng thái toàn cục (**Global State Management**) tương tự như thư viện **Redux**.
+
+#### a. Kiến trúc thư mục (`store/`)
+
+Để quản lý tốt, mã nguồn thường được tổ chức vào một thư mục `store/` riêng biệt:
+
+- `constants.js`: Định nghĩa các hằng số hành động.
+- `actions.js`: Chứa các hàm tạo hành động (**Action Creators**).
+- `reducer.js`: Logic cập nhật trạng thái.
+- `Context.js`: Khởi tạo Context Object.
+- `Provider.js`: Thành phần bao bọc và cung cấp `state`, `dispatch`.
+- `logger.js`: Middleware tùy chỉnh để theo dõi sự thay đổi trạng thái (console logs).
+- `hooks.js`: Hook tùy chỉnh để dễ dàng lấy dữ liệu ra sử dụng.
+- `index.js`: Điểm xuất (export) tập trung cho toàn bộ store.
+
+#### b. Luồng hoạt động
+
+1. **Provider** nhận `reducer` và `initState`, sau đó truyền `[state, dispatch]` vào `Context.Provider`.
+2. **Component** sử dụng hook tùy chỉnh (vd: `useStore`) để lấy `state` và `dispatch`.
+3. Khi người dùng tương tác, **Component** gọi `dispatch(action)`.
+4. **Reducer** xử lý hành động và trả về trạng thái mới.
+5. Toàn bộ các component đang tiêu thụ (consume) context đó sẽ tự động re-render với dữ liệu mới.
+
+#### c. Ví dụ triển khai
+
+**Tệp `Provider.js` (Kết hợp Logger Middleware):**
+
+```javascript
+import { useReducer } from "react";
+import Context from "./Context";
+import reducer, { initState } from "./reducer";
+import logger from "./logger";
+
+function Provider({ children }) {
+  const [state, dispatch] = useReducer(logger(reducer), initState);
+
+  return (
+    <Context.Provider value={[state, dispatch]}>{children}</Context.Provider>
+  );
+}
+```
+
+**Sử dụng trong Component (`App.js`):**
+
+```javascript
+import { actions, useStore } from "./store";
+
+function App() {
+  const [state, dispatch] = useStore();
+  const { todoInput, todos } = state;
+
+  const handleAdd = () => {
+    dispatch(actions.addTodo(todoInput));
+  };
+
+  return (
+    <div>
+      <input
+        value={todoInput}
+        onChange={(e) => dispatch(actions.setTodoInput(e.target.value))}
+      />
+      <button onClick={handleAdd}>Add</button>
+    </div>
+  );
+}
+```
+
+> [!IMPORTANT]
+> Mô hình này rất mạnh mẽ nhưng nếu ứng dụng cực lớn (hàng triệu dòng code, nhiều team làm việc chung), thư viện chuyên dụng như **Redux Toolkit** vẫn là sự lựa chọn ưu tiên vì có nhiều công cụ hỗ trợ (DevTools, RTK Query...) mạnh mẽ hơn.
+
+---
+
+### 13. Redux & Redux Toolkit
+
+**Redux** là một thư viện quản lý trạng thái (State Management) phổ biến nhất trong hệ sinh thái React. Nó giúp duy trì một "Single Source of Truth" (Nguồn chân lý duy nhất) cho toàn bộ ứng dụng.
+
+#### a. Tại sao dùng Redux?
+
+Mặc dù sự kết hợp giữa `useContext` và `useReducer` có thể giải quyết được bài toán quản lý global state, Redux vẫn có những ưu điểm vượt trội hơn:
+
+- **Redux DevTools**: Tiện ích mở rộng cực mạnh giúp bạn debug, xem lịch sử thay đổi state và revert lại bất kỳ lúc nào.
+- **Middleware**: Hỗ trợ xử lý các tác vụ bất đồng bộ (API calls) cực tốt qua Redux Thunk hoặc Redux Saga.
+- **Cấu trúc chặt chẽ**: Quy định cách viết code đồng nhất, giúp nhiều developer phối hợp dễ dàng.
+
+---
+
+#### b. Redux Toolkit (RTK) - Chuẩn mực hiện đại
+
+Viết Redux truyền thống (Vanilla Redux) đòi hỏi rất nhiều "Boilerplate code" (cấu hình lặp đi lặp lại). Vì vậy, **Redux Toolkit** ra đời nhằm tối giản hóa quá trình này và hiện đang được Redux Team khuyến nghị sử dụng.
+
+Khái niệm cốt lõi trong RTK là **Slice**. Một Slice đại diện cho một "phần" của Store, nó tự động gom nhóm và sinh ra:
+
+- `initialState`: Dữ liệu ban đầu.
+- `reducers`: Logic cập nhật state.
+- `actions`: Hàm hành động tương ứng.
+
+**Cách cài đặt:**
+
+```bash
+npm install @reduxjs/toolkit react-redux
+```
+
+**Ví dụ định nghĩa một Slice (Counter Slice):**
+
+```javascript
+import { createSlice } from "@reduxjs/toolkit";
+
+export const counterSlice = createSlice({
+  name: "counter",
+  initialState: { value: 0 },
+  reducers: {
+    increment: (state) => {
+      // RTK tích hợp sẵn thư viện Immer, cho phép viết code update state
+      // theo kiểu "mutate" trực tiếp mà vẫn đảo bảo tính "Immutability" (bất biến).
+
+      // Tương đương với: return { ...state, value: state.value + 1 };
+
+      // Nếu không dùng Immer mà vẫn viết state.value += 1 thì state nó sẽ không thay đổi => === cho ra kết quả vẫn là true => React không re-render
+
+      state.value += 1;
+    },
+    decrement: (state) => {
+      state.value -= 1;
+    },
+  },
+});
+
+// RTK sẽ tự động phân giải và tạo ra các Action Creators
+export const { increment, decrement } = counterSlice.actions;
+export default counterSlice.reducer;
+```
+
+---
+
+#### c. Luồng dữ liệu (Data Flow)
+
+1. **View (UI)**: Giao diện hiển thị, phản ánh dữ liệu từ Store.
+2. **Dispatch**: Người dùng tương tác với App (click nút), một Action sẽ được "bắn" vào Store.
+3. **Reducer**: Store truyền Action đó vào Reducer để xử lý nghiệp vụ -> Tạo ra State mới.
+4. **Subscribe**: Khi State thay đổi, Store thông báo cho UI và UI tự động cập nhật lại.
+
+---
+
+#### d. So sánh Redux vs Context API
+
+| Tiêu chí            | Context + useReducer                                       | Redux / Redux Toolkit                                                |
+| :------------------ | :--------------------------------------------------------- | :------------------------------------------------------------------- |
+| **Cài đặt**         | Có sẵn trong React (Zero dependency).                      | Cần cài đặt thư viện ngoài (`@reduxjs/toolkit`, `react-redux`).      |
+| **Gỡ lỗi (Debug)**  | Khó theo dõi luồng state (thường phải dùng `console.log`). | Cực kỳ trực quan thông qua công cụ chuyên nghiệp **Redux DevTools**. |
+| **Phạm vi áp dụng** | Phù hợp với các ứng dụng quy mô **Nhỏ & Vừa**.             | Thiết yếu cho các dự án **Lớn**, có nhiều members.                   |
