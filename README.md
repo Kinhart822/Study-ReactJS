@@ -968,4 +968,144 @@ const total = useMemo(() => {
 }, [products]); // Chỉ tính lại khi 'products' thay đổi
 ```
 
----
+### 10. `useReducer`
+
+`useReducer` là một Hook cung cấp thêm một cách để quản lý trạng thái (state) cho component. Nó thường được sử dụng thay thế cho `useState` trong các trường hợp state có logic phức tạp, nhiều tầng lồng nhau hoặc khi update state tiếp theo phụ thuộc vào state trước đó một cách phức tạp.
+
+#### a. So sánh `useState` vs `useReducer`
+
+| Đặc điểm | `useState` | `useReducer` |
+| :--- | :--- | :--- |
+| **Độ phức tạp** | Phù hợp với state đơn giản (số, chuỗi, boolean, object/array ít tầng). | Phù hợp với state phức tạp, lồng nhau hoặc logic update khó. |
+| **Tính tập trung** | Logic update nằm rải rác trong các event handlers. | Logic update được tập trung tại một hàm Reducer duy nhất. |
+| **Khả năng đọc** | Dễ hiểu cho các task nhỏ. | Dễ bảo trì và mở rộng cho các task lớn. |
+
+#### b. Quy trình 4 bước thực hiện
+
+Để triển khai `useReducer`, chúng ta thường tuân theo 4 bước chuẩn sau:
+
+1.  **Init state**: Định nghĩa giá trị khởi tạo cho trạng thái.
+2.  **Actions**: Định nghĩa các hành động (thường là các hằng số string) để mô tả những gì sẽ xảy ra.
+3.  **Reducer**: Một hàm nhận vào `state` hiện tại và `action`, dựa vào action để tính toán và trả về `state` mới.
+4.  **Dispatch**: Một hàm (được trả về từ `useReducer`) dùng để gửi một `action` tới Reducer để thực thi việc cập nhật state.
+
+#### c. Ví dụ minh họa (Bộ đếm đơn giản)
+
+```jsx
+import { useReducer } from "react";
+
+// 1. Init state
+const initState = 0;
+
+// 2. Actions
+const UP_ACTION = 'up';
+const DOWN_ACTION = 'down';
+
+// 3. Reducer
+const reducer = (state, action) => {
+    switch (action) {
+        case UP_ACTION:
+            return state + 1;
+        case DOWN_ACTION:
+            return state - 1;
+        default:
+            throw new Error('Invalid action');
+    }
+};
+
+// 4. Component
+function App() {
+    // dispatch là hàm dùng để kích hoạt các action
+    const [count, dispatch] = useReducer(reducer, initState);
+
+    return (
+        <div style={{ padding: 20 }}>
+            <h1>{count}</h1>
+            <button onClick={() => dispatch(DOWN_ACTION)}>Down</button>
+            <button onClick={() => dispatch(UP_ACTION)}>Up</button>
+        </div>
+    );
+}
+```
+
+#### d. Ví dụ nâng cao: To-do List (Tách file)
+
+Trong các dự án thực tế, khi logic trở nên phức tạp, `useReducer` thường được tổ chức bằng cách tách thành nhiều tệp tin riêng biệt để dễ quản lý và tái sử dụng.
+
+**Cấu trúc thư mục tham khảo:**
+```text
+Todo/
+├── constants.js  # Định nghĩa các hằng số Action
+├── actions.js    # Khai báo các Action functions
+├── reducer.js    # Chứa Initial State và Reducer function
+├── logger.js     # Middleware để log quá trình thay đổi state
+└── index.js      # Component chính
+```
+
+**Chi tiết các thành phần:**
+
+1. **`constants.js`**:
+```javascript
+export const SET_JOB = 'set_job';
+export const ADD_JOB = 'add_job';
+export const DELETE_JOB = 'delete_job';
+```
+
+2. **`actions.js`**:
+```javascript
+import { SET_JOB, ADD_JOB, DELETE_JOB } from "./constants";
+
+export const setJob = payload => ({ type: SET_JOB, payload });
+export const addJob = payload => ({ type: ADD_JOB, payload });
+export const deleteJob = payload => ({ type: DELETE_JOB, payload });
+```
+
+3. **`reducer.js`**:
+```javascript
+import { SET_JOB, ADD_JOB, DELETE_JOB } from "./constants";
+
+export const initState = { job: '', jobs: [] };
+
+const reducer = (state, action) => {
+    switch (action.type) {
+        case SET_JOB:
+            return { ...state, job: action.payload };
+        case ADD_JOB:
+            return { ...state, jobs: [...state.jobs, state.job] };
+        case DELETE_JOB:
+            const newJobs = [...state.jobs];
+            newJobs.splice(action.payload, 1);
+            return { ...state, jobs: newJobs };
+        default:
+            throw new Error('Invalid action');
+    }
+};
+
+export default reducer;
+```
+
+4. **`index.js` (Component chính)**:
+```jsx
+function TodoApp() {
+    const [state, dispatch] = useReducer(logger(reducer), initState);
+    const { job, jobs } = state;
+
+    return (
+        <div>
+            <input value={job} onChange={e => dispatch(setJob(e.target.value))} />
+            <button onClick={() => dispatch(addJob(job))}>Add</button>
+            <ul>
+                {jobs.map((job, index) => (
+                    <li key={index}>
+                        {job} 
+                        <span onClick={() => dispatch(deleteJob(index))}> &times;</span>
+                    </li>
+                ))}
+            </ul>
+        </div>
+    );
+}
+```
+
+> [!TIP]
+> Có thể viết thêm các **Middleware** (như hàm `logger` bên trên) để can thiệp vào quá trình gửi action hoặc ghi nhật ký thay đổi của hệ thống.

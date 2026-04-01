@@ -1,4 +1,5 @@
-import { useMemo, useState, useRef } from "react";
+import { useReducer, useRef } from "react";
+import TodoApp from "./Todo";
 
 /**
  * 1. useState: Cơ bản với kiểu dữ liệu nguyên thủy (số)
@@ -465,110 +466,174 @@ import { useMemo, useState, useRef } from "react";
  * - Nó sẽ trả về giá trị được tính toán từ callback.
  * - Giá trị này chỉ được tính toán lại khi một trong các dependencies thay đổi.
  */
+// function App() {
+//   const [name, setName] = useState("");
+//   const [price, setPrice] = useState("");
+//   const [products, setProducts] = useState([]);
+
+//   const nameRef = useRef();
+
+//   const handleAddProduct = () => {
+//     // Tránh thêm sản phẩm trống
+//     if (!name || !price) return;
+
+//     setProducts([
+//       ...products,
+//       {
+//         name,
+//         price: Number(price), // Chuyển đổi sang số
+//       },
+//     ]);
+
+//     // Reset form và focus lại vào ô 'Name'
+//     setName("");
+//     setPrice("");
+//     nameRef.current.focus();
+//   };
+
+//   /**
+//    * Dùng useMemo để tối ưu hiệu năng:
+//    * - 'total' chỉ được tính toán lại khi danh sách 'products' thay đổi.
+//    * - Nếu nhập vào các ô input (làm App re-render), biến 'total' sẽ được lấy từ bộ nhớ (memo), 
+//    *   không cần chạy lại vòng lặp reduce tốn tài nguyên.
+//    */
+//   const total = useMemo(() => {
+//     console.log("Tính toán lại tổng tiền...");
+
+//     // array.reduce((accumulator, currentValue) => {
+//     // xử lý
+//     // return accumulator;
+//     // }, initialValue);
+
+//     // accumulator: giá trị tích lũy
+//     // currentValue: giá trị hiện tại
+//     // initialValue: giá trị ban đầu
+//     const result = products.reduce((acc, product) => {
+//       return acc + product.price;
+//     }, 0);
+//     return result;
+//   }, [products]);
+
+//   return (
+//     <div className="App" style={{ padding: 40, maxWidth: 600, margin: '0 auto' }}>
+//       <h1 style={{ color: '#2f3542' }}>Quản lý sản phẩm</h1>
+
+//       <div style={{ display: 'flex', gap: 10, marginBottom: 20 }}>
+//         <input
+//           value={name}
+//           ref={nameRef}
+//           style={{ padding: '8px 12px', borderRadius: 4, border: '1px solid #ccc', flex: 2 }}
+//           placeholder="Tên sản phẩm..."
+//           onChange={(e) => setName(e.target.value)}
+//         />
+//         <input
+//           type="number"
+//           value={price}
+//           style={{ padding: '8px 12px', borderRadius: 4, border: '1px solid #ccc', flex: 1 }}
+//           placeholder="Giá..."
+//           onChange={(e) => setPrice(e.target.value)}
+//         />
+//         <button 
+//           onClick={handleAddProduct}
+//           style={{ 
+//             padding: '8px 24px', 
+//             backgroundColor: '#2ed573', 
+//             color: '#fff', 
+//             border: 'none', 
+//             borderRadius: 4, 
+//             cursor: 'pointer',
+//             fontWeight: 'bold'
+//           }}
+//         >
+//           Thêm
+//         </button>
+//       </div>
+
+//       <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#ff4757', marginBottom: 20 }}>
+//         Tổng cộng: {total.toLocaleString()} đ
+//       </div>
+
+//       <ul style={{ listStyle: 'none', padding: 0 }}>
+//         {products.map((product, index) => (
+//           <li 
+//             key={index} 
+//             style={{ 
+//               padding: '12px', 
+//               borderBottom: '1px solid #f1f2f6', 
+//               display: 'flex', 
+//               justifyContent: 'space-between' 
+//             }}
+//           >
+//             <span>{product.name}</span>
+//             <span style={{ color: '#747d8c' }}>{product.price.toLocaleString()} đ</span>
+//           </li>
+//         ))}
+//       </ul>
+//     </div>
+//   );
+// }
+
+/**
+ * 12. useReducer Hook
+ * 
+ * Khái niệm: 
+ * - Cung cấp thêm một lựa chọn để quản lý state cho functional component.
+ * - Phù hợp với các state phức tạp, có nhiều tầng hoặc logic thay đổi phức tạp.
+ * 
+ * Luồng hoạt động (4 bước):
+ * 1. Init state: Khởi tạo giá trị ban đầu.
+ * 2. Actions: Định nghĩa các hành động (Tên hành động).
+ * 3. Reducer: Hàm xử lý logic dựa trên hành động để trả về state mới.
+ * 4. Dispatch: Hàm để gửi một hành động (action) tới reducer.
+ * 
+ * So sánh useState vs useReducer:
+ * - useState: Dùng cho state đơn giản (số, chuỗi, boolean, array/object ít tầng).
+ * - useReducer: Dùng cho state phức tạp, lồng nhau, hoặc khi logic update phức tạp.
+ */
+// // 1. Init state 
+// const initState = 0;
+
+// // 2. Actions
+// const UP_ACTION = 'up';
+// const DOWN_ACTION = 'down';
+
+// // 3. Reducer
+// // Nhận vào state hiện tại và action, trả về state mới
+// const reducer = (state, action) => {
+//   console.log('Reducer running with action:', action);
+
+//   switch (action) {
+//     case UP_ACTION:
+//       return state + 1;
+//     case DOWN_ACTION:
+//       return state - 1;
+//     default:
+//       throw new Error('Invalid action');
+//   }
+// };
+
+// // 4. Component
+// function App() {
+//   const [count, dispatch] = useReducer(reducer, initState)
+//   console.log(count)
+//   return (
+//     <div style={{ padding: 32 }}>
+//       <h1>{count}</h1>
+//       <button onClick={() => dispatch(DOWN_ACTION)}>Down</button>
+//       <button onClick={() => dispatch(UP_ACTION)}>Up</button>
+//     </div>
+//   );
+// }
+
+/**
+ * 13. useReducer Hook (Ứng dụng: To-do App)
+ * 
+ * Đây là ví dụ nâng cao sử dụng useReducer để quản lý Todo List.
+ * Cấu trúc được chia nhỏ thành các file: constants, actions, reducer, logger.
+ */
 function App() {
-  const [name, setName] = useState("");
-  const [price, setPrice] = useState("");
-  const [products, setProducts] = useState([]);
-
-  const nameRef = useRef();
-
-  const handleAddProduct = () => {
-    // Tránh thêm sản phẩm trống
-    if (!name || !price) return;
-
-    setProducts([
-      ...products,
-      {
-        name,
-        price: Number(price), // Chuyển đổi sang số
-      },
-    ]);
-
-    // Reset form và focus lại vào ô 'Name'
-    setName("");
-    setPrice("");
-    nameRef.current.focus();
-  };
-
-  /**
-   * Dùng useMemo để tối ưu hiệu năng:
-   * - 'total' chỉ được tính toán lại khi danh sách 'products' thay đổi.
-   * - Nếu nhập vào các ô input (làm App re-render), biến 'total' sẽ được lấy từ bộ nhớ (memo), 
-   *   không cần chạy lại vòng lặp reduce tốn tài nguyên.
-   */
-  const total = useMemo(() => {
-    console.log("Tính toán lại tổng tiền...");
-
-    // array.reduce((accumulator, currentValue) => {
-    // xử lý
-    // return accumulator;
-    // }, initialValue);
-
-    // accumulator: giá trị tích lũy
-    // currentValue: giá trị hiện tại
-    // initialValue: giá trị ban đầu
-    const result = products.reduce((acc, product) => {
-      return acc + product.price;
-    }, 0);
-    return result;
-  }, [products]);
-
   return (
-    <div className="App" style={{ padding: 40, maxWidth: 600, margin: '0 auto' }}>
-      <h1 style={{ color: '#2f3542' }}>Quản lý sản phẩm</h1>
-      
-      <div style={{ display: 'flex', gap: 10, marginBottom: 20 }}>
-        <input
-          value={name}
-          ref={nameRef}
-          style={{ padding: '8px 12px', borderRadius: 4, border: '1px solid #ccc', flex: 2 }}
-          placeholder="Tên sản phẩm..."
-          onChange={(e) => setName(e.target.value)}
-        />
-        <input
-          type="number"
-          value={price}
-          style={{ padding: '8px 12px', borderRadius: 4, border: '1px solid #ccc', flex: 1 }}
-          placeholder="Giá..."
-          onChange={(e) => setPrice(e.target.value)}
-        />
-        <button 
-          onClick={handleAddProduct}
-          style={{ 
-            padding: '8px 24px', 
-            backgroundColor: '#2ed573', 
-            color: '#fff', 
-            border: 'none', 
-            borderRadius: 4, 
-            cursor: 'pointer',
-            fontWeight: 'bold'
-          }}
-        >
-          Thêm
-        </button>
-      </div>
-
-      <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#ff4757', marginBottom: 20 }}>
-        Tổng cộng: {total.toLocaleString()} đ
-      </div>
-
-      <ul style={{ listStyle: 'none', padding: 0 }}>
-        {products.map((product, index) => (
-          <li 
-            key={index} 
-            style={{ 
-              padding: '12px', 
-              borderBottom: '1px solid #f1f2f6', 
-              display: 'flex', 
-              justifyContent: 'space-between' 
-            }}
-          >
-            <span>{product.name}</span>
-            <span style={{ color: '#747d8c' }}>{product.price.toLocaleString()} đ</span>
-          </li>
-        ))}
-      </ul>
-    </div>
+    <TodoApp />
   );
 }
 
