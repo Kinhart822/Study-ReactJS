@@ -1,4 +1,4 @@
-import { memo } from "react";
+import Paragraph from "./Paragraph";
 
 /**
  * React.memo() -> Higher Order Component (HOC)
@@ -27,18 +27,31 @@ import { memo } from "react";
 /**
  * useCallback Hook
  */
-function Content({ onIncrease }) {
-    console.log("Re-render: Content Component");
+// function Content({ onIncrease }) {
+//     console.log("Re-render: Content Component");
 
+//     return (
+//         <>
+//             {/* Cú pháp Fragment: <></> hoặc <>
+//                 Dùng để nhóm các phần tử lại với nhau mà không cần thêm thẻ div bao quanh
+//             */}
+//             <h2 style={{ color: '#ff4757' }}>Hello World</h2>
+//             <button onClick={onIncrease}>Increase</button>
+//         </>
+//     );
+// }
+
+// export default memo(Content);
+
+/**
+ * useContext Hook
+ */
+function Content() {
     return (
-        <>
-            {/* Cú pháp Fragment: <></> hoặc <>
-                Dùng để nhóm các phần tử lại với nhau mà không cần thêm thẻ div bao quanh
-            */}
-            <h2 style={{ color: '#ff4757' }}>Hello World</h2>
-            <button onClick={onIncrease}>Increase</button>
-        </>
+        <div>
+            <Paragraph />
+        </div>
     );
 }
 
-export default memo(Content);
+export default Content;

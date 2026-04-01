@@ -1,5 +1,7 @@
-import { useReducer, useRef } from "react";
-import TodoApp from "./Todo";
+import { useContext } from 'react';
+import './App.css';
+import Content from "./Content";
+import { ThemeContext } from "./ThemeProvider";
 
 /**
  * 1. useState: Cơ bản với kiểu dữ liệu nguyên thủy (số)
@@ -369,7 +371,6 @@ import TodoApp from "./Todo";
  *   và muốn nó chỉ render lại khi các props này thực sự thay đổi.
  * - Tránh lãng phí tài nguyên xử lý UI.
  */
-
 // function App() {
 //   const [count, setCount] = useState(0);
 //   const [count2, setCount2] = useState(0);
@@ -631,9 +632,45 @@ import TodoApp from "./Todo";
  * Đây là ví dụ nâng cao sử dụng useReducer để quản lý Todo List.
  * Cấu trúc được chia nhỏ thành các file: constants, actions, reducer, logger.
  */
+// function App() {
+//   return (
+//     <TodoApp />
+//   );
+// }
+
+/**
+ * 14. useContext Hook
+ * 
+ * Khái niệm: 
+ * - Giúp truyền dữ liệu từ component cha xuống các component con sâu nhất 
+ *   mà không cần thông qua props ở từng tầng trung gian (Prop Drilling).
+ * 
+ * Các bước cơ bản:
+ * 1. Create Context: Tạo ra một "ngữ cảnh" chung.
+ * 2. Provider: Thành phần cung cấp dữ liệu cho toàn bộ cây component con.
+ * 3. Consumer: Thành phần sử dụng dữ liệu (thông qua useContext Hook).
+ */
+
 function App() {
+  /**
+   * - useContext nhận vào một Context Object (từ createContext).
+   * - Nó trả về giá trị hiện tại của context đó (từ Provider gần nhất).
+   */
+  const context = useContext(ThemeContext);
+
   return (
-    <TodoApp />
+    <div style={{ padding: '32px', textAlign: 'center' }}>
+      <h1 style={{ color: '#2f3542' }}>useContext Hook Demo</h1>
+
+      <button
+        onClick={context.toggleTheme}
+      >
+        Toggle Theme
+      </button>
+
+      {/* Component Content và các con của nó đều có thể truy cập ThemeContext */}
+      <Content />
+    </div>
   );
 }
 

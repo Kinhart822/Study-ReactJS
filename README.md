@@ -1109,3 +1109,71 @@ function TodoApp() {
 
 > [!TIP]
 > Có thể viết thêm các **Middleware** (như hàm `logger` bên trên) để can thiệp vào quá trình gửi action hoặc ghi nhật ký thay đổi của hệ thống.
+
+---
+
+### 11. `useContext`
+
+`useContext` là Hook giúp bạn đơn giản hóa việc truyền dữ liệu từ component cha xuống các component con mà không cần sử dụng tới props ở mọi tầng trung gian (**Prop Drilling**).
+
+#### a. Bài toán Prop Drilling
+
+Khi ứng dụng lớn dần, việc truyền dữ liệu từ Component A xuống Component C thông qua Component B (mặc dù B không dùng dữ liệu đó) sẽ khiến mã nguồn trở nên rối rắm và khó bảo trì. `useContext` sinh ra để giải quyết vấn đề này bằng cách tạo ra một "ngữ cảnh" chung.
+
+#### b. Quy trình 3 bước thực hiện
+
+1.  **Tạo Context**: Sử dụng `createContext()` để tạo ra một context object.
+2.  **Provider**: Sử dụng thành phần `Provider` để bao bọc cây component và cung cấp giá trị (value).
+3.  **Consumer**: Sử dụng Hook `useContext` trong component con để lấy dữ liệu từ Provider gần nhất.
+
+#### c. Ví dụ minh họa (Toggle Theme)
+
+**Bước 1: Tạo Context (`ThemeContext.js`)**
+
+```javascript
+import { createContext, useState } from "react";
+
+export const ThemeContext = createContext();
+
+export function ThemeProvider({ children }) {
+    const [theme, setTheme] = useState('dark');
+    const toggleTheme = () => setTheme(theme === 'dark' ? 'light' : 'dark');
+
+    return (
+        <ThemeContext.Provider value={{ theme, toggleTheme }}>
+            {children}
+        </ThemeContext.Provider>
+    );
+}
+```
+
+**Bước 2: Sử dụng Provider tại cấp cao nhất (`index.js`)**
+
+```jsx
+import { ThemeProvider } from "./ThemeContext";
+
+root.render(
+    <ThemeProvider>
+        <App />
+    </ThemeProvider>
+);
+```
+
+**Bước 3: Sử dụng useContext Hook trong component con**
+
+```jsx
+import { useContext } from "react";
+import { ThemeContext } from "./ThemeContext";
+
+function Paragraph() {
+    const { theme } = useContext(ThemeContext);
+    return (
+        <p className={theme}>Nội dung này thay đổi theo theme!</p>
+    );
+}
+```
+
+#### d. Khi nào nên dùng useContext?
+
+- Dùng cho các dữ liệu mang tính chất **Global** (toàn cục) như: Ngôn ngữ (i18n), Theme (Dark/Light), Thông tin người dùng đã đăng nhập...
+- Lưu ý: Không nên lạm dụng cho các trường hợp truyền dữ liệu đơn giản giữa cha và con trực tiếp vì sẽ làm giảm khả năng tái sử dụng của component.
