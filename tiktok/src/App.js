@@ -1,5 +1,7 @@
-import { useEffect, useRef } from 'react';
 import './App.css';
+import Heading from './components/Heading';
+import Paragraph from './components/Paragraph';
+import GlobalStyles from './components/GlobalStyles';
 
 /**
  * 1. useState: Cơ bản với kiểu dữ liệu nguyên thủy (số)
@@ -58,13 +60,11 @@ import './App.css';
  * - Two-way binding: Dữ liệu từ UI cập nhật ngược lại state (qua onChange/value).
  * - localStorage: Lưu dữ liệu bền vững ở trình duyệt.
  */
-
 // const course = [
 //   { id: 1, name: "HTML, CSS" },
 //   { id: 2, name: "JavaScript" },
 //   { id: 3, name: "ReactJS" }
 // ]
-
 // function App() {
 //   const todoStorage = localStorage.getItem("todos");
 //   const [name, setName] = useState("");
@@ -147,7 +147,6 @@ import './App.css';
 //     </div>
 //   );
 // }
-
 // function App() {
 //   const [showContent, setShowContent] = useState(false);
 
@@ -171,7 +170,6 @@ import './App.css';
 //   { id: 2, name: "JavaScript" },
 //   { id: 3, name: "HTML/CSS" },
 // ];
-
 // function App() {
 //   const [title, setTitle] = useState("");
 //   const [showContent, setShowContent] = useState(false);  // Trạng thái đóng/mở nội dung chính
@@ -648,7 +646,6 @@ import './App.css';
  * 2. Provider: Thành phần cung cấp dữ liệu cho toàn bộ cây component con.
  * 3. Consumer: Thành phần sử dụng dữ liệu (thông qua useContext Hook).
  */
-
 // function App() {
 //   /**
 //    * - useContext nhận vào một Context Object (từ createContext).
@@ -736,60 +733,83 @@ import './App.css';
  *   expose toàn bộ DOM node bị gắn ref (khiến component cha có thể tùy ý thay đổi), 
  *   ta chỉ expose những API (phương thức/thuộc tính) mà mình cho phép.
  */
+// function App() {
+//   const videoInstanceRef = useRef();
 
-import Video from "./Video";
+//   useEffect(() => {
+//     // Lúc này videoInstanceRef.current chỉ chứa đối tượng có 2 hàm { play, pause }
+//     console.log("Ref được expose từ Video component:", videoInstanceRef.current);
+//   }, []);
 
+//   const handlePlay = () => {
+//     // Không thể gán videoInstanceRef.current.remove() hay các hành động nguy hiểm khác
+//     videoInstanceRef.current.play();
+//   };
+
+//   const handlePause = () => {
+//     videoInstanceRef.current.pause();
+//   };
+
+//   return (
+//     <div style={{ padding: '40px', textAlign: 'center' }}>
+//       <h1 style={{ color: '#2f3542', fontSize: '2rem', marginBottom: '30px' }}>
+//         useImperativeHandle Demo
+//       </h1>
+
+//       <div style={{ marginBottom: '20px' }}>
+//         <Video ref={videoInstanceRef} />
+//       </div>
+//       {/* Mặc định function component không nhận ref, nên cần forwardRef bọc lại ref*/}
+//       {/* Tuy nhiên nếu làm theo cách này sẽ làm mất đi tính đóng gói của component con,
+//        vì nó cho phép component con "bộc lộ" một số phương thức hoặc giá trị cụ thể cho component cha thông qua ref làm cho component cha có thể can thiệp vào logic bên trong component con */}
+
+//       <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
+//         <button
+//           onClick={handlePlay}
+//           style={{
+//             padding: '10px 25px', backgroundColor: '#2ed573', color: '#fff',
+//             border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold'
+//           }}
+//         >
+//           Play
+//         </button>
+//         <button
+//           onClick={handlePause}
+//           style={{
+//             padding: '10px 25px', backgroundColor: '#ff4757', color: '#fff',
+//             border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold'
+//           }}
+//         >
+//           Pause
+//         </button>
+//       </div>
+//     </div>
+//   );
+// }
+
+/**
+ * 18. CSS Module
+ * 
+ * Khái niệm:
+ * - Khi dự án lớn lên, việc sử dụng CSS thông thường sẽ dễ dẫn đến xung đột (trùng lặp) tên class.
+ * - CSS Module giải quyết bằng cách tự động băm (hash) thêm chuỗi ký tự ngẫu nhiên vào tên class lúc build,
+ *   tạo ra các class name độc nhất (unique), ví dụ: `Heading_heading__abc123`.
+ * - Lợi ích: Bạn thoải mái đặt tên class ngắn gọn, dể hiểu bên trong từng component
+ *   nhưng vẫn đảm bảo "Tính Đóng Gói" (Encapsulation) tuyệt đối về mặt giao diện.
+ */
 function App() {
-  const videoInstanceRef = useRef();
-
-  useEffect(() => {
-    // Lúc này videoInstanceRef.current chỉ chứa đối tượng có 2 hàm { play, pause }
-    console.log("Ref được expose từ Video component:", videoInstanceRef.current);
-  }, []);
-
-  const handlePlay = () => {
-    // Không thể gán videoInstanceRef.current.remove() hay các hành động nguy hiểm khác
-    videoInstanceRef.current.play();
-  };
-
-  const handlePause = () => {
-    videoInstanceRef.current.pause();
-  };
-
   return (
-    <div style={{ padding: '40px', textAlign: 'center' }}>
-      <h1 style={{ color: '#2f3542', fontSize: '2rem', marginBottom: '30px' }}>
-        useImperativeHandle Demo
-      </h1>
-
-      <div style={{ marginBottom: '20px' }}>
-        <Video ref={videoInstanceRef} />
+    <GlobalStyles>
+      <div style={{ padding: "0 32px" }}>
+          <Heading />
+          <Paragraph />
+        </div>
+      <div className="d-flex">
+        <div>ReactJS</div>
+        <div style={{ padding: "0 12px" }}> | </div>
+        <div>Javascript</div>
       </div>
-      {/* Mặc định function component không nhận ref, nên cần forwardRef bọc lại ref*/}
-      {/* Tuy nhiên nếu làm theo cách này sẽ làm mất đi tính đóng gói của component con,
-       vì nó cho phép component con "bộc lộ" một số phương thức hoặc giá trị cụ thể cho component cha thông qua ref làm cho component cha có thể can thiệp vào logic bên trong component con */}
-
-      <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
-        <button
-          onClick={handlePlay}
-          style={{
-            padding: '10px 25px', backgroundColor: '#2ed573', color: '#fff',
-            border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold'
-          }}
-        >
-          Play
-        </button>
-        <button
-          onClick={handlePause}
-          style={{
-            padding: '10px 25px', backgroundColor: '#ff4757', color: '#fff',
-            border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold'
-          }}
-        >
-          Pause
-        </button>
-      </div>
-    </div>
+    </GlobalStyles>
   );
 }
 

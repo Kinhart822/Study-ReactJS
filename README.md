@@ -18,6 +18,7 @@ Kho lưu trữ kiến thức cơ bản tổng hợp về **ReactJS**.
 4. [Phần 4: Create React App & Modern Tools](#-phần-4-create-react-app--modern-tools)
 5. [Phần 5: React Hooks](#-phần-5-react-hooks)
 6. [Phần 6: Redux & Redux Toolkit](#-phần-6-redux--redux-toolkit)
+7. [Phần 7: Styling trong React](#-phần-7-styling-trong-react)
 
 ---
 
