@@ -1,0 +1,15 @@
+/* Add your custom styles for Button1 here */
+.btn {
+  padding: 4px 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  &:hover {
+    background-color: #ba3f3f46;
+  }
+}
+
+.primary {
+  color: #fff;
+  background-color: #007bff;
+}

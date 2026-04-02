@@ -1404,3 +1404,144 @@ function App() {
   );
 }
 ```
+
+---
+
+## 🎨 Phần 7: Styling trong React
+
+### 15. CSS Modules
+
+#### a. Vấn đề của Normal CSS
+
+- Trong React, nếu import một tệp CSS thông thường (vd: `import './style.css'`), quy tắc của Webpack (hoặc Vite) là sẽ gộp (bundle) toàn bộ chúng vào một thẻ `<style>` toàn cục duy nhất. Điều này dẫn đến nguy cơ rất lớn: **Xung đột tên Class (CSS Name Clash)**.
+
+_Ví dụ_: Component Header và Footer không may đặt trùng tên class là `.title` thì class nào import sau sẽ đè mất style của class import trước.
+
+#### b. Giải pháp của CSS Modules
+
+- Đổi tên file thành chuẩn `[name].module.css`. Khi biên dịch, CSS Module sẽ tự động **Băm (Hash)** tên class. Từ class `.btn` nó sẽ dịch ra thành một lớp unique: `Button_btn__x8y9z`. Vì thế, hiện tượng trùng lặp class sẽ chấm dứt.
+
+---
+
+### 16. `clsx` & `classnames`
+
+- Khi làm việc với các State động (`isActive`, `isDisabled`), việc nội suy chuỗi bằng cơ bản kiểu `className={`${styles.btn} ${isActive ? styles.active : ''}`}` sẽ khiến phần return của React ngày càng dài và rối rắm.
+
+=> Thư viện siêu nhẹ `clsx` (và `classnames`) hỗ trợ gán class qua cấu trúc Object.
+
+**Cách dùng thực tế:**
+
+```javascript
+import clsx from "clsx";
+import styles from "./Button.module.css";
+
+function Button({ isActive, isDisabled }) {
+  // Styles được cấp phát gọn gàng qua giá trị Boolean
+  const classes = clsx(styles.btn, {
+    [styles.active]: isActive,
+    [styles.disabled]: isDisabled,
+  });
+
+  return <button className={classes}>Click me</button>;
+}
+```
+
+---
+
+### 17. Tailwind CSS
+
+Thay vì viết tên class, xong đó mở tệp `.css` ra để viết độ rộng, màu sắc... thì Tailwind CSS (Một **Utility-first CSS framework**) cung cấp sẵn hàng ngàn class tiền chế. Bạn chỉ việc gắn nó vào thẻ HTML.
+
+**Lợi ích của Tailwind:**
+
+- Không cần phải nghĩ tên cho class nữa.
+- Không cần quản lý các tệp `.css` đính kèm phức tạp.
+- Cực kỳ kết hợp tốt với thuật toán của React và thư viện `clsx` để làm trang web động:
+
+```javascript
+<button
+  className={clsx(
+    "px-4 py-2 rounded font-bold text-white", // Thuộc tính nền tảng tĩnh
+    isActive ? "bg-red-500 scale-105" : "bg-blue-500 hover:bg-blue-600", // Thuộc tính động
+  )}
+></button>
+```
+
+### 18. Bootstrap
+
+**Khái niệm:** Bootstrap là một CSS Framework rất phổ biến, cung cấp sẵn các thành phần giao diện (UI components) đã được định dạng và xây dựng sẵn tính năng (Navbar, Modal, Card, Button...).
+
+**Ưu điểm:**
+- Xây dựng ứng dụng cực kỳ nhanh chóng vì sử dụng lại các khối UI có sẵn.
+- Hệ thống Grid 12 cột mạnh mẽ giúp làm Responsive dễ dàng.
+- Tài liệu đồ sộ và cộng đồng hỗ trợ lớn mạnh.
+
+**Nhược điểm:**
+- Giao diện có xu hướng trông rập khuôn, dễ nhận ra là đang dùng Bootstrap.
+- Khá cồng kềnh, tải cả bộ framework dù chỉ dùng vài thành phần.
+- Tùy biến (customize) khó khăn hơn, đôi khi phải ghi đè CSS cứng bằng `!important`.
+
+**💡 So sánh Bootstrap vs Tailwind CSS:**
+
+| Đặc điểm | Bootstrap (Component-based) | Tailwind CSS (Utility-first) |
+| :--- | :--- | :--- |
+| **Triết lý** | Cung cấp sẵn các thành phần giao diện trọn gói (VD: `.btn`, `.card`, `.navbar`). | Cung cấp các class tiện ích cực nhỏ (VD: `.bg-red-500`, `.p-4`). Bạn tự lắp ráp thành UI. |
+| **Độ thẩm mỹ** | Thường mang tính "mặc định", nhìn giống nhiều trang web khác. | Giao diện mang tính cá nhân hóa cao, tự do sáng tạo. |
+| **Tùy biến** | Khó khăn khi muốn làm giao diện khác biệt hẳn so với template gốc. | Cực kì mạnh mẽ, làm bất kỳ layout nào mà không ra khỏi file HTML/JSX. |
+| **Dung lượng build**| Thường nặng hơn (trừ khi biết cách import từng phần module). | Siêu nhẹ khi build ra production do loại bỏ hoàn toàn các class không được sử dụng. |
+
+---
+
+### 19. SCSS (SASS)
+
+**Khái niệm:** SCSS (Sassy CSS) là một **CSS Preprocessor** (Bộ tiền xử lý CSS). Nó mở rộng thêm sức mạnh cho CSS truyền thống bằng cách cung cấp các tính năng như lập trình (biến, lồng ghép, hàm, mixin...), giúp việc quản lý file style trở nên khoa học và gọn gàng hơn.
+
+Trình duyệt không thể hiểu SCSS trực tiếp, do đó mã SCSS sẽ được trình biên dịch chuyển đổi (compile) trở về CSS thông thường trước khi trình duyệt thực thi.
+
+**Các tính năng nổi bật giúp SCSS vượt trội hơn CSS thường:**
+
+1. **Variables (Biến):**
+Lưu trữ thông tin cấu hình (màu chủ đạo, font chữ) để tái sử dụng ở mọi nơi.
+```scss
+$primary-color: #334155;
+
+.btn {
+  background-color: $primary-color;
+}
+```
+
+2. **Nesting (Lồng ghép):**
+Viết CSS theo dạng phân cấp nhánh cây (ngữ cảnh) thay vì lặp lại tên class cha.
+```scss
+.navbar {
+  background: white;
+
+  ul {
+    list-style: none;
+
+    li {
+      display: inline-block;
+      
+      &:hover { color: $primary-color; } /* Toán tử & tham chiếu đến selector cha */
+    }
+  }
+}
+```
+
+3. **Mixins & Includes:**
+Nhóm các khối CSS nhằm tái sử dụng nhiều lần, giống như function. Cực kì tiện lợi khi cấu hình Responsive với `media queries`.
+```scss
+@mixin flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.box {
+  @include flex-center;
+}
+```
+
+**Cách tích hợp vào React:**
+Chạy lệnh `npm install sass`, sau đó đổi đuôi file `.css` thành `.scss`.
+Đặc biệt, SCSS kết hợp cực kỳ hoàn hảo với CSS Modules đã nói ở trên (`.module.scss`)!

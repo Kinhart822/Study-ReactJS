@@ -1,11 +1,11 @@
-import './App.css';
-import Heading from './components/Heading';
-import Paragraph from './components/Paragraph';
-import GlobalStyles from './components/GlobalStyles';
+import "./App.css";
+import Button from "./components/Button";
+import Button1 from "./components/Button1";
+import GlobalStyles from "./components/GlobalStyles";
 
 /**
  * 1. useState: Cơ bản với kiểu dữ liệu nguyên thủy (số)
- * Giải thích: 
+ * Giải thích:
  * - counter: Trạng thái hiện tại (bắt đầu là 1)
  * - setCounter: Hàm dùng để cập nhật trạng thái
  * - handleIncrease: Hàm tăng giá trị counter lên 1 mỗi khi click
@@ -188,13 +188,13 @@ import GlobalStyles from './components/GlobalStyles';
 //    * useEffect(callback)
 //    * - Gọi callback mỗi khi component re-render
 //    * - Gọi callback sau khi component thêm element vào DOM
-//    * 
+//    *
 //    * useEffect(callback, [])
 //    * - Chỉ gọi callback 1 lần duy nhất sau khi component được mounted
-//    * 
+//    *
 // * useEffect(callback, [deps])
 //    * - Callback sẽ được gọi lại mỗi khi dependency (deps) thay đổi
-//    * 
+//    *
 //    * CHUNG:
 //    * 1. Callback luôn được gọi sau khi component được mounted
 //    * 2. Cleanup function luôn được gọi trước khi component unmounted
@@ -228,7 +228,7 @@ import GlobalStyles from './components/GlobalStyles';
  * 3. Render lại UI
  * 4. Gọi cleanup nếu deps thay đổi
  * 5. Gọi useEffect callback
- * 
+ *
  * useLayoutEffect:
  * 1. Cập nhật lại state
  * 2. Cập nhật DOM (mutated)
@@ -240,7 +240,7 @@ import GlobalStyles from './components/GlobalStyles';
 //   const [counter, setCounter] = useState(0);
 
 //   useLayoutEffect(() => {
-//     // Nếu giá trị vượt quá 3, reset về 0 ngay lập tức 
+//     // Nếu giá trị vượt quá 3, reset về 0 ngay lập tức
 //     // trước khi người dùng kịp thấy số lỗi trên màn hình.
 //     if (counter > 3) {
 //       setCounter(0);
@@ -248,7 +248,7 @@ import GlobalStyles from './components/GlobalStyles';
 //   }, [counter]);
 
 //   useEffect(() => {
-//     // Nếu giá trị vượt quá 3, reset về 0 ngay lập tức 
+//     // Nếu giá trị vượt quá 3, reset về 0 ngay lập tức
 //     // nhưng sẽ bị giật nhẹ chuyển từ 4 -> 0 vì phải chờ DOM render xong mới cập nhật.
 //     if (counter > 3) {
 //       setCounter(0);
@@ -269,13 +269,13 @@ import GlobalStyles from './components/GlobalStyles';
 
 /**
  * 8. useRef Hook
- * 
- * Mục đích: 
- * 1. Lưu các giá trị qua tham chiếu bên ngoài function component 
+ *
+ * Mục đích:
+ * 1. Lưu các giá trị qua tham chiếu bên ngoài function component
  *    để giá trị KHÔNG bị reset khi component re-render.
  * 2. Truy cập DOM element trực tiếp.
  * 3. Lưu trữ giá trị cũ (Previous state).
- * 
+ *
  * Đặc điểm:
  * - useRef trả về một đối tượng có thuộc tính 'current'.
  * - Khi giá trị trong 'current' thay đổi, component KHÔNG re-render.
@@ -323,7 +323,7 @@ import GlobalStyles from './components/GlobalStyles';
 //   const handleStop = () => {
 //     // ban đầu là id vẫn có thể log ra là 60
 //     // nhưng nếu để tiếp tục sẽ undefined
-//     // vì khi re-render thì hàm App() sẽ được gọi lại và timerId sẽ bị reset về undefined 
+//     // vì khi re-render thì hàm App() sẽ được gọi lại và timerId sẽ bị reset về undefined
 //     // console.log('timerId', timerId);
 //     // clearInterval(timerId);
 
@@ -356,14 +356,14 @@ import GlobalStyles from './components/GlobalStyles';
 
 /**
  * 9. React.memo() HOC
- * 
- * Khái niệm: 
+ *
+ * Khái niệm:
  * - memo() là một Higher Order Component (HOC).
- * - Dùng để bao bọc các component con nhằm tránh việc chúng bị re-render 
+ * - Dùng để bao bọc các component con nhằm tránh việc chúng bị re-render
  *   không cần thiết khi component cha re-render.
- * 
+ *
  * Khi nào sử dụng:
- * - Khi component con nhận vào các props "nguyên thủy" (string, number, boolean) 
+ * - Khi component con nhận vào các props "nguyên thủy" (string, number, boolean)
  *   và muốn nó chỉ render lại khi các props này thực sự thay đổi.
  * - Tránh lãng phí tài nguyên xử lý UI.
  */
@@ -381,8 +381,8 @@ import GlobalStyles from './components/GlobalStyles';
 
 //   return (
 //     <div className="App" style={{ padding: 32 }}>
-//       {/* 
-//               Component Content chỉ nhận prop 'count'. 
+//       {/*
+//               Component Content chỉ nhận prop 'count'.
 //               Nhờ React.memo, khi chúng ta bấm 'Increase 2' (chỉ thay đổi count2),
 //               Content sẽ KHÔNG bị re-render (Check console log).
 //             */}
@@ -402,12 +402,12 @@ import GlobalStyles from './components/GlobalStyles';
 
 /**
  * 10. useCallback Hook
- * 
- * Khái niệm: 
+ *
+ * Khái niệm:
  * - Dùng để tránh việc tạo mới một hàm không cần thiết sau mỗi lần re-render.
- * - Giải quyết vấn đề re-render của component con khi truyền object, array, function qua props 
+ * - Giải quyết vấn đề re-render của component con khi truyền object, array, function qua props
  *   (nếu component con đã được bao bọc bởi React.memo).
- * 
+ *
  * Cách hoạt động:
  * - useCallback nhận vào một callback function và một mảng dependencies.
  * - Nó sẽ trả về một memoized version của callback (giữ nguyên địa chỉ vùng nhớ).
@@ -427,7 +427,7 @@ import GlobalStyles from './components/GlobalStyles';
 //   // };
 
 //   /**
-//    * ✅ Cách xử lý đúng: 
+//    * ✅ Cách xử lý đúng:
 //    * Dùng useCallback để "ghi nhớ" (memoize) hàm này.
 //    * Nó sẽ trả về một tham chiếu hàm duy nhất qua các lần render nếu dependencies không đổi.
 //    * => Giúp React.memo ở component con hoạt động hiệu quả.
@@ -438,7 +438,7 @@ import GlobalStyles from './components/GlobalStyles';
 
 //   return (
 //     <div className="App" style={{ padding: 32 }}>
-//       {/* 
+//       {/*
 //           - Tên props bắt đầu bằng 'on' (onIncrease) để thể hiện sự kiện.
 //           - Tên hàm xử lý bắt đầu bằng 'handle' (handleIncrease).
 //       */}
@@ -453,11 +453,11 @@ import GlobalStyles from './components/GlobalStyles';
 
 /**
  * 11. useMemo Hook
- * 
- * Khái niệm: 
+ *
+ * Khái niệm:
  * - Dùng để "ghi nhớ" (memoize) một giá trị được tính toán phức tạp.
  * - Tránh việc tính toán lại giá trị này sau mỗi lần re-render nếu dữ liệu đầu vào (dependencies) không thay đổi.
- * 
+ *
  * Cách hoạt động:
  * - useMemo nhận vào một callback function và một mảng dependencies.
  * - Nó sẽ trả về giá trị được tính toán từ callback.
@@ -491,7 +491,7 @@ import GlobalStyles from './components/GlobalStyles';
 //   /**
 //    * Dùng useMemo để tối ưu hiệu năng:
 //    * - 'total' chỉ được tính toán lại khi danh sách 'products' thay đổi.
-//    * - Nếu nhập vào các ô input (làm App re-render), biến 'total' sẽ được lấy từ bộ nhớ (memo), 
+//    * - Nếu nhập vào các ô input (làm App re-render), biến 'total' sẽ được lấy từ bộ nhớ (memo),
 //    *   không cần chạy lại vòng lặp reduce tốn tài nguyên.
 //    */
 //   const total = useMemo(() => {
@@ -530,14 +530,14 @@ import GlobalStyles from './components/GlobalStyles';
 //           placeholder="Giá..."
 //           onChange={(e) => setPrice(e.target.value)}
 //         />
-//         <button 
+//         <button
 //           onClick={handleAddProduct}
-//           style={{ 
-//             padding: '8px 24px', 
-//             backgroundColor: '#2ed573', 
-//             color: '#fff', 
-//             border: 'none', 
-//             borderRadius: 4, 
+//           style={{
+//             padding: '8px 24px',
+//             backgroundColor: '#2ed573',
+//             color: '#fff',
+//             border: 'none',
+//             borderRadius: 4,
 //             cursor: 'pointer',
 //             fontWeight: 'bold'
 //           }}
@@ -552,13 +552,13 @@ import GlobalStyles from './components/GlobalStyles';
 
 //       <ul style={{ listStyle: 'none', padding: 0 }}>
 //         {products.map((product, index) => (
-//           <li 
-//             key={index} 
-//             style={{ 
-//               padding: '12px', 
-//               borderBottom: '1px solid #f1f2f6', 
-//               display: 'flex', 
-//               justifyContent: 'space-between' 
+//           <li
+//             key={index}
+//             style={{
+//               padding: '12px',
+//               borderBottom: '1px solid #f1f2f6',
+//               display: 'flex',
+//               justifyContent: 'space-between'
 //             }}
 //           >
 //             <span>{product.name}</span>
@@ -572,22 +572,22 @@ import GlobalStyles from './components/GlobalStyles';
 
 /**
  * 12. useReducer Hook
- * 
- * Khái niệm: 
+ *
+ * Khái niệm:
  * - Cung cấp thêm một lựa chọn để quản lý state cho functional component.
  * - Phù hợp với các state phức tạp, có nhiều tầng hoặc logic thay đổi phức tạp.
- * 
+ *
  * Luồng hoạt động (4 bước):
  * 1. Init state: Khởi tạo giá trị ban đầu.
  * 2. Actions: Định nghĩa các hành động (Tên hành động).
  * 3. Reducer: Hàm xử lý logic dựa trên hành động để trả về state mới.
  * 4. Dispatch: Hàm để gửi một hành động (action) tới reducer.
- * 
+ *
  * So sánh useState vs useReducer:
  * - useState: Dùng cho state đơn giản (số, chuỗi, boolean, array/object ít tầng).
  * - useReducer: Dùng cho state phức tạp, lồng nhau, hoặc khi logic update phức tạp.
  */
-// // 1. Init state 
+// // 1. Init state
 // const initState = 0;
 
 // // 2. Actions
@@ -624,7 +624,7 @@ import GlobalStyles from './components/GlobalStyles';
 
 /**
  * 13. useReducer Hook (Ứng dụng: To-do App)
- * 
+ *
  * Đây là ví dụ nâng cao sử dụng useReducer để quản lý Todo List.
  * Cấu trúc được chia nhỏ thành các file: constants, actions, reducer, logger.
  */
@@ -636,11 +636,11 @@ import GlobalStyles from './components/GlobalStyles';
 
 /**
  * 14. useContext Hook
- * 
- * Khái niệm: 
- * - Giúp truyền dữ liệu từ component cha xuống các component con sâu nhất 
+ *
+ * Khái niệm:
+ * - Giúp truyền dữ liệu từ component cha xuống các component con sâu nhất
  *   mà không cần thông qua props ở từng tầng trung gian (Prop Drilling).
- * 
+ *
  * Các bước cơ bản:
  * 1. Create Context: Tạo ra một "ngữ cảnh" chung.
  * 2. Provider: Thành phần cung cấp dữ liệu cho toàn bộ cây component con.
@@ -686,7 +686,6 @@ import GlobalStyles from './components/GlobalStyles';
 //     inputRef.current.focus();
 //   };
 
-
 //   return (
 //     <div>
 //       <input
@@ -709,11 +708,11 @@ import GlobalStyles from './components/GlobalStyles';
 
 /**
  * 16. So sánh Context + useReducer vs Redux
- * 
- * Redux là gì? 
+ *
+ * Redux là gì?
  * - Một thư viện bên ngoài (external library) để quản lý state.
  * - Có chung triết lý với useReducer (Store, Actions, Reducer).
- * 
+ *
  * Sự khác biệt chính:
  * 1. Phạm vi: Redux mặc định cho toàn bộ ứng dụng. Context có thể chia nhỏ nhiều Provider.
  * 2. Công cụ: Redux có DevTools mạnh mẽ để "du hành thời gian" (Time Travel Debugging).
@@ -721,16 +720,16 @@ import GlobalStyles from './components/GlobalStyles';
  * 4. Hiệu năng: Redux tối ưu re-render tốt hơn cho các app cực lớn.
  */
 
-// Mọi thứ vừa làm trong thư mục store/ chính là "tự tay" 
+// Mọi thứ vừa làm trong thư mục store/ chính là "tự tay"
 // xây dựng một mini-Redux bằng React Hooks.
 
 /**
  * 17. useImperativeHandle hook
- * 
+ *
  * Khái niệm:
  * - Tùy chỉnh (Customize) ref của một component con khi truyền ref từ component cha xuống.
  * - Giải quyết vấn đề mất "tính đóng gói" (Encapsulation) của component con. Thay vì
- *   expose toàn bộ DOM node bị gắn ref (khiến component cha có thể tùy ý thay đổi), 
+ *   expose toàn bộ DOM node bị gắn ref (khiến component cha có thể tùy ý thay đổi),
  *   ta chỉ expose những API (phương thức/thuộc tính) mà mình cho phép.
  */
 // function App() {
@@ -789,26 +788,50 @@ import GlobalStyles from './components/GlobalStyles';
 
 /**
  * 18. CSS Module
- * 
+ *
  * Khái niệm:
  * - Khi dự án lớn lên, việc sử dụng CSS thông thường sẽ dễ dẫn đến xung đột (trùng lặp) tên class.
  * - CSS Module giải quyết bằng cách tự động băm (hash) thêm chuỗi ký tự ngẫu nhiên vào tên class lúc build,
  *   tạo ra các class name độc nhất (unique), ví dụ: `Heading_heading__abc123`.
- * - Lợi ích: Bạn thoải mái đặt tên class ngắn gọn, dể hiểu bên trong từng component
- *   nhưng vẫn đảm bảo "Tính Đóng Gói" (Encapsulation) tuyệt đối về mặt giao diện.
+ * - Lợi ích: Thoải mái đặt tên class ngắn gọn, dễ hiểu bên trong từng component
+ *   nhưng vẫn đảm bảo "Tính đóng gói" (Encapsulation) tuyệt đối về mặt giao diện.
+ */
+// function App() {
+//   return (
+//     <GlobalStyles>
+//       <div style={{ padding: "0 32px" }}>
+//           <Heading />
+//           <Paragraph />
+//         </div>
+//       <div className="d-flex">
+//         <div>ReactJS</div>
+//         <div style={{ padding: "0 12px" }}> | </div>
+//         <div>Javascript</div>
+//       </div>
+//     </GlobalStyles>
+//   );
+// }
+
+/**
+ * 19. Thư viện clsx/classnames và Tailwind CSS
+ *
+ * clsx & classnames:
+ * - Là các thư viện siêu nhẹ (clsx nhẹ hơn classnames) giúp quản lý và nối class name linh hoạt.
+ * - Hỗ trợ binding class động bằng cấu trúc Object dễ đọc thay vì dùng template literal lồng ghép trúc trắc.
+ *
+ * Cú pháp:
+ * - clsx('class1', 'class2', { 'class3': isTrue, 'class4': !isTrue })
+ *
+ * Tailwind CSS:
+ * - Utility-first CSS framework. Dùng các class định nghĩa sẵn để style ngay trong HTML mà không cần rời file JS.
+ * - Giải quyết triệt để bài toán rặn não suy nghĩ đặt tên class, kết hợp hoàn mỹ với `clsx`.
  */
 function App() {
   return (
     <GlobalStyles>
-      <div style={{ padding: "0 32px" }}>
-          <Heading />
-          <Paragraph />
-        </div>
-      <div className="d-flex">
-        <div>ReactJS</div>
-        <div style={{ padding: "0 12px" }}> | </div>
-        <div>Javascript</div>
-      </div>
+      <Button />
+      <Button1 />
+      <Button1 primary />
     </GlobalStyles>
   );
 }
