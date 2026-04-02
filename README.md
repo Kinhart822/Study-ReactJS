@@ -251,7 +251,7 @@ module.exports = {
 
 ## 🚀 Phần 4: Create React App & Modern Tools
 
-**Thư mục:** [`tiktok/`](./tiktok)
+**Thư mục:** [`react-vite/`](./react-vite)
 
 Việc cấu hình Webpack thủ công rất tốt để hiểu bản chất, nhưng tốn thời gian. **Create React App (CRA)** là công cụ giúp ta có ngay một dự án React hoàn chỉnh chỉ với 1 lệnh.
 
@@ -308,10 +308,10 @@ npm create vite@latest my-app --template react
 
 ### 2. Cấu trúc dự án CRA
 
-Dự án trong thư mục `tiktok/` là một ví dụ về CRA:
+Dự án trong thư mục `react-vite/` là một ví dụ về CRA:
 
 ```text
-tiktok/
+react-vite/
 ├── node_modules/     # Thư viện cài đặt
 ├── public/           # Tệp tĩnh (index.html, favicon, v.v.)
 ├── src/              # Code chính của ứng dụng
