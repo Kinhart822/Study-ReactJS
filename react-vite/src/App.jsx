@@ -1,7 +1,8 @@
+import { NavLink, Route, Routes } from "react-router";
 import "./App.css";
-import Button from "./components/Button";
-import Button1 from "./components/Button1";
-import GlobalStyles from "./components/GlobalStyles";
+import ContactPage from "./pages/ContactPage";
+import HomePage from "./pages/HomePage";
+import NewsPage from "./pages/NewsPage";
 
 /**
  * 1. useState: Cơ bản với kiểu dữ liệu nguyên thủy (số)
@@ -824,15 +825,81 @@ import GlobalStyles from "./components/GlobalStyles";
  *
  * Tailwind CSS:
  * - Utility-first CSS framework. Dùng các class định nghĩa sẵn để style ngay trong HTML mà không cần rời file JS.
- * - Giải quyết triệt để bài toán rặn não suy nghĩ đặt tên class, kết hợp hoàn mỹ với `clsx`.
+ * - Giải quyết triệt để bài toán suy nghĩ đặt tên class, kết hợp hoàn mỹ với `clsx`.
+ */
+// function App() {
+//   return (
+//     <GlobalStyles>
+//       <Button />
+//       <Button1 />
+//       <Button1 primary />
+//     </GlobalStyles>
+//   );
+// }
+
+/**
+ * 20. React Router
  */
 function App() {
+  const routes = [
+    { id: "home", name: "Trang Chủ", path: "/", element: <HomePage /> },
+    { id: "news", name: "Tin Tức", path: "/news", element: <NewsPage /> },
+    {
+      id: "contact",
+      name: "Liên Hệ",
+      path: "/contact",
+      element: <ContactPage />,
+    },
+  ];
+
   return (
-    <GlobalStyles>
-      <Button />
-      <Button1 />
-      <Button1 primary />
-    </GlobalStyles>
+    <div>
+      {/* HEADER NAVBAR */}
+      <header>
+        <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
+          <div className="font-bold text-xl text-indigo-600">
+            Học React Router
+          </div>
+
+          <nav>
+            <ul className="flex items-center gap-2">
+              {routes.map((route) => (
+                <li key={route.id}>
+                  {/* Dùng NavLink thay cho <a> để ko bị reload trang */}
+                  <NavLink
+                    to={route.path}
+                    className={({ isActive }) =>
+                      `px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
+                        isActive
+                          ? "bg-indigo-600 text-white shadow-md"
+                          : "text-gray-600 hover:bg-gray-200 hover:text-gray-900"
+                      }`
+                    }
+                  >
+                    {route.name}
+                  </NavLink>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        </div>
+      </header>
+
+      {/* CONTENT AREA */}
+      <main className="max-w-5xl mx-auto px-6 py-12">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 min-h-[400px]">
+          <Routes>
+            {/*
+              path: Là đường dẫn trên URL.
+              element: Là component sẽ đươc render ra tương ứng với Route đó.
+            */}
+            {routes.map((route) => (
+              <Route key={route.id} path={route.path} element={route.element} />
+            ))}
+          </Routes>
+        </div>
+      </main>
+    </div>
   );
 }
 

@@ -7,7 +7,21 @@ const componentName = process.argv[2];
 // Check if the component name is provided
 if (!componentName) {
   console.error("❌ Please supply a valid component name!");
-  console.log("👉 Usage: npm run generate <ComponentName>");
+  console.log("👉 Usage: npm run gen:component <ComponentName>");
+  process.exit(1);
+}
+
+// Validate component name
+const compNameRegex = /^[a-zA-Z]+$/;
+if (!compNameRegex.test(componentName)) {
+  console.error("❌ Please supply a valid component name! (only letters allowed)");
+  console.log("👉 Usage: npm run gen:component <ComponentName>");
+  process.exit(1);
+}
+
+if (componentName.length < 3) {
+  console.error("❌ Please supply a valid component name! (at least 3 characters)");
+  console.log("👉 Usage: npm run gen:component <ComponentName>");
   process.exit(1);
 }
 
